@@ -18,9 +18,8 @@ describe('Database tests', () => {
     });
 
     it('should remove an existing database', async () => {
-        // const dbHandler = new DB();
-        // await dbHandler.createDb('aaa');
-        // expect(fs.existsSync('./mockdb/aaa')).to.be.true;
-        throw new Error('need to implement test for removing a db');
+        const dbHandler = new DB();
+        await dbHandler.removeDb('aaa');
+        expect(fs.existsSync('./mockdb/aaa')).to.be.false;
     });
 });
