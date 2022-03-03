@@ -17,4 +17,12 @@ describe('Table tests', () => {
         const table = connection.table('test-table');
         console.log(table);
     });
+
+    it('should insert a new record into a table', () => {
+        const table = connection.table('test-table');
+        console.log(table.insertOne({
+            prop1: 'value1',
+            prop2: 'value2'
+        }));
+    })
 });
