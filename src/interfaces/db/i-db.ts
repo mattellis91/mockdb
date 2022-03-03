@@ -1,1 +1,3 @@
-export interface IDB {}
+export interface IDB {
+    successfullyConnected:boolean;
+}
