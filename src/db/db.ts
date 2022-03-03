@@ -1,25 +1,24 @@
+import { MockDb } from ".";
 import { IDB } from "..";
-import fs, { exists } from 'fs';
-import process from "process";
-const fsPromises = fs.promises;
 
-export class DB implements IDB {
+export class Db implements IDB {
+    protected dbName:string | undefined;
+    protected dbPath:string | undefined;
+    protected tables:string[] | undefined;
 
-    public async createDb(dbName: string): Promise<number> {     
+    constructor(dbName:string) {
         const dbPath = './mockdb/'+dbName;
-        if(!fs.existsSync(dbPath)) {
-            await fsPromises.mkdir(dbPath, {recursive: true});
-            return 1;
+        if(MockDb.exists(dbPath)) {
+            this.dbName = dbName;
+            this.dbPath = dbPath
+            this.tables = [];
+        } else {
+            (async () => {
+                await MockDb.createDb(dbName);
+                this.dbName = dbName;
+                this.dbPath = dbPath
+                this.tables = [];
+            })();
         }
-        return 0;
-    }
-
-    public async removeDb(dbName: string): Promise<number> {
-        const dbPath = './mockdb/'+dbName;
-        if(fs.existsSync(dbPath)) {
-            await fsPromises.rmdir(dbPath, {recursive: true});
-            return 1;
-        }
-        return 0;
     }
 }

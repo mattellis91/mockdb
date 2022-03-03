@@ -1,4 +1,4 @@
-import { DB } from "../../src";
+import { MockDb } from "../../src";
 import fs from 'fs';
 import { expect } from "chai";
 const fsPromises = fs.promises;
@@ -12,14 +12,19 @@ describe('Database tests', () => {
     });
 
     it('should create a new database', async () => {
-        const dbHandler = new DB();
-        await dbHandler.createDb('aaa');
+        await MockDb.createDb('aaa');
         expect(fs.existsSync('./mockdb/aaa')).to.be.true;
     });
 
+    
+    it('should create a connection to an existing db', () => {
+        const connection = MockDb.connect('aaa');
+        console.log(connection);
+    });
+
     it('should remove an existing database', async () => {
-        const dbHandler = new DB();
-        await dbHandler.removeDb('aaa');
+        await MockDb.removeDb('aaa');
         expect(fs.existsSync('./mockdb/aaa')).to.be.false;
     });
+
 });
