@@ -1,3 +1,5 @@
+import { Table } from "../..";
+
 export interface IDB {
-    successfullyConnected:boolean;
+    table(tableName:string): Table;
 }

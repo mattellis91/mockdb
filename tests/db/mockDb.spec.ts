@@ -16,16 +16,6 @@ describe('Database tests', () => {
         expect(fs.existsSync('./mockdb/dbtest')).to.be.true;
     });
 
-    
-    it('should successfully connect to an existing db', () => {
-        const connection = MockDb.connect('dbtest');
-        expect(connection.successfullyConnected).to.be.true;
-    });
-
-    it('should unsuccessful connect to a non existent db', () => {
-        const connection = MockDb.connect('nodb');
-        expect(connection.successfullyConnected).to.be.false;
-    });
 
     it('should remove an existing database', async () => {
         await MockDb.removeDb('dbtest');

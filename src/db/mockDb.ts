@@ -1,5 +1,4 @@
 import fs, { exists } from 'fs';
-import process from "process";
 import { Db } from '.';
 const fsPromises = fs.promises;
 

@@ -14,5 +14,7 @@ describe('Table tests', () => {
     });
 
     it('should create a new table', () => {
+        const table = connection.table('test-table');
+        console.log(table);
     });
 });

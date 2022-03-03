@@ -1,26 +1,32 @@
-import { MockDb } from ".";
+import { DbComponent, MockDb, Table } from ".";
 import { IDB } from "..";
+import fs, { exists } from 'fs';
 
 export class Db implements IDB {
-    protected dbName:string | undefined;
-    protected dbPath:string | undefined;
+    protected dbName:string;
+    protected dbPath:string ;
     protected tables:string[] | undefined;
-    public successfullyConnected:boolean = false;
-
+    
     constructor(dbName:string) {
         const dbPath = './mockdb/'+dbName;
-        if(MockDb.exists(dbPath)) {
-            this.dbName = dbName;
-            this.dbPath = dbPath
-            this.tables = [];
-            this.successfullyConnected = true;
-        } else {
+        if(!MockDb.exists(dbPath)) {
             (async () => {
                 await MockDb.createDb(dbName);
-                this.dbName = dbName;
-                this.dbPath = dbPath
-                this.tables = [];
             })();
+        }
+        this.dbName = dbName;
+        this.dbPath = dbPath
+        this.tables = [];
+    }
+
+    table(tableName:string):Table {
+        const tablePath = this.dbPath+'/'+tableName+'.json';
+        const fileContents = `[]`;
+        if(!MockDb.exists(tablePath)) {
+            fs.writeFileSync(tablePath, fileContents);
+            return new Table(this.dbName, this.dbPath, tableName);
+        } else {
+            return new Table(this.dbName, this.dbPath, tableName);
         }
     }
 }

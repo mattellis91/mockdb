@@ -1,26 +1,22 @@
 import fs, { exists } from 'fs';
-import { Db, MockDb } from ".";
+import { DbComponent } from "../db/dbComponent";
+import {MockDb } from '../db/mockDb';
 import { ITable } from "..";
 
-export class Table extends Db implements ITable {
-    public createTable(tableName: string): boolean {
-        const tablePath = this.dbPath+tableName+'.json';
-        const fileContents = `[]`;
-        if(!MockDb.exists(tablePath)) {
-            fs.writeFileSync(tablePath, fileContents);
-            return true;
-        } else {
-            throw Error(`table '${tableName}' already exists`);
-        }
+export class Table extends DbComponent implements ITable {
+    private _tableName:string;
+    constructor(dbName:string, dbPath:string, tableName:string) {
+        super(dbName, dbPath);
+        this._tableName = tableName;
     }
-
-    public removeTable(tableName: string):boolean {
-        const tablePath = this.dbPath+tableName+'.json';
+    
+    public remove():boolean {
+        const tablePath = this.dbPath+this._tableName+'.json';
         if(MockDb.exists(tablePath)) {
             fs.unlinkSync(tablePath);
             return true;
         } else {
-            throw Error(`table '${tableName}' doesn't exists`);
+            throw Error(`table '${this._tableName}' doesn't exists`);
         }
     }
 }
