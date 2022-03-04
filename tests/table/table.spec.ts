@@ -33,6 +33,15 @@ describe('Table tests', () => {
         expect(tableInsertResult.insertSuccessfull).to.be.true;
     });
 
+    
+    it('should return all table names in database', () => {
+        connection.table('test-table-2');
+        const tableNames = connection.listTables().sort();
+        expect(tableNames.length).to.equal(2);
+        expect(tableNames[0]).to.equal('test-table');
+        expect(tableNames[1]).to.equal('test-table-2');
+    });
+
     it('should remove an existing table', () => {
         const dropTableResult = connection.dropTable('test-table');
         expect(dropTableResult).to.be.true;
@@ -45,4 +54,5 @@ describe('Table tests', () => {
         });
         expect(tableInsertResult.insertSuccessfull).to.be.false;
     });
+
 });

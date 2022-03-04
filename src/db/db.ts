@@ -19,7 +19,7 @@ export class Db implements IDB {
         this.tables = [];
     }
 
-    table(tableName:string):Table {
+    public table(tableName:string):Table {
         const tablePath = this.getFullTablePath(tableName);
         const fileContents = `[]`;
         if(!MockDb.exists(tablePath)) {
@@ -30,13 +30,21 @@ export class Db implements IDB {
         }
     }
 
-    dropTable(tableName:string):boolean {
+    public dropTable(tableName:string):boolean {
         const tablePath = this.getFullTablePath(tableName);
         if(!MockDb.exists(tablePath)) {
             return false;
         }
         fs.unlinkSync(tablePath);
         return true;
+    }
+
+    public listTables():string[] {
+        const tableNames:string[] = [];
+        fs.readdirSync(this.dbPath).forEach(table => {
+            tableNames.push(MockDb.removeExtensionFromFileName(table));
+        });
+        return tableNames;
     }
 
     private getFullTablePath(tableName:string):string {

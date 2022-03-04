@@ -29,4 +29,8 @@ export class MockDb {
     public static connect(dbName:string): Db {
         return new Db(dbName);
     }
+
+    public static removeExtensionFromFileName(filename:string): string {
+        return filename.substring(0, filename.lastIndexOf('.')) || filename;
+    }
 }
