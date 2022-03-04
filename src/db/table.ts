@@ -1,6 +1,5 @@
 import fs, { exists } from 'fs';
 import { DbComponent } from "../db/dbComponent";
-import {MockDb } from '../db/mockDb';
 import { IInsertOneRepsonse, ITable } from "..";
 import cuid from 'cuid';
 
@@ -57,6 +56,25 @@ export class Table extends DbComponent implements ITable {
             return undefined;
         }
     };
+
+    public updateRecordById(id:string, recordData:Record<string, unknown>) : Record<string, unknown> | undefined {
+        try {
+            const tableContentsRaw = fs.readFileSync(this._tablePath);
+            if(tableContentsRaw) {
+                const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
+                const foundRecordIndex = tableContents.findIndex((record) => record._id === id);
+                if(foundRecordIndex > -1) {
+                    const newRecord = {...tableContents[foundRecordIndex], ...recordData};
+                    tableContents[foundRecordIndex] = newRecord;
+                    fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
+                    return newRecord;
+                }
+                return undefined;
+            }
+        } catch (e) {
+            return undefined;
+        }
+    }
 
     public removeRecord(id:string): boolean {
         try {

@@ -61,6 +61,17 @@ describe('Table tests', () => {
         expect(removeResult).to.be.false;
     });
 
+    
+    it('should successfully update an existing record', () => {
+        const tableInsertResult = table.insertOne({
+            prop1: 1,
+            prop2: 2
+        });
+        const updateResult = table.updateRecordById(tableInsertResult.record._id as string, {prop1:10});
+        expect(updateResult).to.not.be.undefined;
+        expect(updateResult?.prop1).to.equal(10);
+    });
+
     it('should return all table names in database', () => {
         connection.table('test-table-2');
         const tableNames = connection.listTables().sort();
