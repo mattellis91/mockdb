@@ -33,7 +33,20 @@ describe('Table tests', () => {
         expect(tableInsertResult.insertSuccessfull).to.be.true;
     });
 
-    
+    it('should sucessfully retrieve a record from a table when supplying a valid id', () => {
+        const tableInsertResult = table.insertOne({
+            prop1: 'value10',
+            prop2: 'value20'
+        });
+        const retrievedRecord = table.retrieveRecordById(tableInsertResult.record._id as string);
+        expect(retrievedRecord).to.not.be.undefined;
+    });
+
+    it('should unsucessfully retrieve a record from a table when supplying an invalid id', () => {
+        const retrievedRecord = table.retrieveRecordById('aaa');
+        expect(retrievedRecord).to.be.undefined;
+    });
+
     it('should return all table names in database', () => {
         connection.table('test-table-2');
         const tableNames = connection.listTables().sort();

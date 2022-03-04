@@ -44,4 +44,17 @@ export class Table extends DbComponent implements ITable {
             }
         }
     }
+
+    public retrieveRecordById(id:string) : Record<string, unknown> | undefined {
+        try {
+            const tableContentsRaw = fs.readFileSync(this._tablePath);
+            if(tableContentsRaw) {
+                const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
+                return tableContents.find((record) => record._id === id);
+            }
+            return undefined;
+        } catch(e) {
+            return undefined;
+        }
+    };
 }
