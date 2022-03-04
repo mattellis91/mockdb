@@ -47,6 +47,20 @@ describe('Table tests', () => {
         expect(retrievedRecord).to.be.undefined;
     });
 
+    it('should successfully remove a record from a table when supplying a valid id', () => {
+        const tableInsertResult = table.insertOne({
+            prop1: 'value234',
+            prop2: 'value342'
+        });
+        const removeResult = table.removeRecord(tableInsertResult.record._id as string);
+        expect(removeResult).to.be.true;
+    });
+
+    it('should unsucessfully remove a record from a table when supplying an invalid id', () => {
+        const removeResult = table.removeRecord('aaa');
+        expect(removeResult).to.be.false;
+    });
+
     it('should return all table names in database', () => {
         connection.table('test-table-2');
         const tableNames = connection.listTables().sort();

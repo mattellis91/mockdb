@@ -57,4 +57,23 @@ export class Table extends DbComponent implements ITable {
             return undefined;
         }
     };
+
+    public removeRecord(id:string): boolean {
+        try {
+            const tableContentsRaw = fs.readFileSync(this._tablePath);
+            if(tableContentsRaw) {
+                const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
+                const foundRecordIndex = tableContents.findIndex((record) => record._id === id);
+                if(foundRecordIndex > -1) {
+                    tableContents.splice(foundRecordIndex, 1);
+                    fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        } catch(e) {
+            return false;
+        }
+    }
 }
