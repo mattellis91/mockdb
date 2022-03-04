@@ -13,16 +13,6 @@ export class Table extends DbComponent implements ITable {
         this._tablePath = this.dbPath + "/" + tableName + ".json";
     }
     
-    public remove():boolean {
-        const tablePath = this.dbPath+this._tableName+'.json';
-        if(MockDb.exists(tablePath)) {
-            fs.unlinkSync(tablePath);
-            return true;
-        } else {
-            throw Error(`table '${this._tableName}' doesn't exists`);
-        }
-    }
-
     public insertOne(record:Record<string, unknown>): IInsertOneRepsonse {
         const recordToInsert = {_id:cuid(), ...record}
         try {

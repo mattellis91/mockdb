@@ -1,3 +1,5 @@
+import { IInsertOneRepsonse } from "../repsonses";
+
 export interface ITable {
-    remove(): boolean
-   }
+    insertOne(record:Record<string, unknown>): IInsertOneRepsonse
+}

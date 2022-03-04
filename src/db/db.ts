@@ -20,7 +20,7 @@ export class Db implements IDB {
     }
 
     table(tableName:string):Table {
-        const tablePath = this.dbPath+'/'+tableName+'.json';
+        const tablePath = this.getFullTablePath(tableName);
         const fileContents = `[]`;
         if(!MockDb.exists(tablePath)) {
             fs.writeFileSync(tablePath, fileContents);
@@ -29,4 +29,17 @@ export class Db implements IDB {
             return new Table(this.dbName, this.dbPath, tableName);
         }
     }
+
+    dropTable(tableName:string):boolean {
+        const tablePath = this.getFullTablePath(tableName);
+        if(!MockDb.exists(tablePath)) {
+            return false;
+        }
+        fs.unlinkSync(tablePath);
+        return true;
+    }
+
+    private getFullTablePath(tableName:string):string {
+        return `${this.dbPath}/${tableName}.json`;
+    } 
 }

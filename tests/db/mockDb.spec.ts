@@ -11,6 +11,12 @@ describe('Database tests', () => {
         }
     });
 
+    after(async () => {
+        if(fs.existsSync('./mockdb')){
+            await fsPromises.rmdir('./mockdb', {recursive: true});
+        }
+    });
+
     it('should create a new database', async () => {
         await MockDb.createDb('dbtest');
         expect(fs.existsSync('./mockdb/dbtest')).to.be.true;
