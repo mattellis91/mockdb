@@ -1,9 +1,10 @@
-import fs, { exists } from 'fs';
+import fs from 'fs';
 import { DbComponent } from "../db/dbComponent";
-import { IInsertOneRepsonse, ITable } from "..";
 import cuid from 'cuid';
 import { MockDb } from './mockDb';
-import { IInsertManyRepsonse } from '../interfaces';
+import { ITable, ITableResponse } from '../interfaces';
+import { Responses } from './responses';
+import { cloneDeep } from 'lodash';
 
 export class Table extends DbComponent implements ITable {
     private _tableName:string;
@@ -29,8 +30,9 @@ export class Table extends DbComponent implements ITable {
         }
     }
     
-    public insertOne(record:Record<string, unknown>): IInsertOneRepsonse {
+    public insertOne(record:Record<string, unknown>): ITableResponse {
         const recordToInsert = {_id:cuid(), ...record}
+        const response:ITableResponse = this.getInitialResponse();
         try {
             const tableContentsRaw = fs.readFileSync(this._tablePath);
             if(tableContentsRaw) {
@@ -38,32 +40,22 @@ export class Table extends DbComponent implements ITable {
                 tableContents.unshift(recordToInsert);
                 fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
                 this._count++;
-                return {
-                    dbName: this.dbName,
-                    tableName: this._tableName,
-                    insertSuccessfull: true,
-                    record:recordToInsert
-                }
+                response.status = Responses.SUCCESS;
+                response.data = [recordToInsert];
+                return response
             } else {
-                return {
-                    dbName: this.dbName,
-                    tableName: this._tableName,
-                    insertSuccessfull: false,
-                    record:recordToInsert
-                }
+                response.errors.push(new Error('Error reading contents of table'));
+                return response;
             }
         } catch(e) {
-            return {
-                dbName: this.dbName,
-                tableName: this._tableName,
-                insertSuccessfull: false,
-                record:recordToInsert
-            }
+            response.errors.push(e as Error);
+            return response;
         }
     }
 
-    public insertMany(records:Record<string, unknown>[]): IInsertManyRepsonse {
+    public insertMany(records:Record<string, unknown>[]): ITableResponse {
         const recordsToInsert = records.map((record) => {return {_id:cuid(), ...record}});
+        const response:ITableResponse = this.getInitialResponse();
         try {
             const tableContentsRaw = fs.readFileSync(this._tablePath);
             if(tableContentsRaw) {
@@ -71,44 +63,46 @@ export class Table extends DbComponent implements ITable {
                 tableContents.concat(recordsToInsert);
                 fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
                 this._count+=records.length;
-                return {
-                    dbName: this.dbName,
-                    tableName: this._tableName,
-                    insertSuccessfull: true,
-                    records:recordsToInsert
-                }
+                response.status = Responses.SUCCESS;
+                response.data = recordsToInsert;
+                return response;
             } else {
-                return {
-                    dbName: this.dbName,
-                    tableName: this._tableName,
-                    insertSuccessfull: false,
-                    records:recordsToInsert
-                }
+                response.errors.push(new Error('Error reading contents of table'));
+                return response;
             }
         } catch(e) {
-            return {
-                dbName: this.dbName,
-                tableName: this._tableName,
-                insertSuccessfull: false,
-                records:recordsToInsert
-            }
+            response.errors.push(e as Error);
+            return response;
         }
     }
 
-    public retrieveRecordById(id:string) : Record<string, unknown> | undefined {
+    public retrieveRecordById(id:string) : ITableResponse {
+        const response:ITableResponse = this.getInitialResponse();
         try {
             const tableContentsRaw = fs.readFileSync(this._tablePath);
             if(tableContentsRaw) {
-                const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
-                return tableContents.find((record) => record._id === id);
+                const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[]; 
+                const foundItem = tableContents.find((record) => record._id === id);
+                if(foundItem) {
+                    response.status = Responses.SUCCESS;
+                    response.data = [foundItem];
+                    return response;
+                } else {
+                    response.errors.push(new Error(`Could not find it with id '${id}' in table '${this._tableName}'`));
+                    return response;
+                }
+            } else {
+                response.errors.push(new Error('Error reading contents of table'));
+                return response;
             }
-            return undefined;
         } catch(e) {
-            return undefined;
+            response.errors.push(e as Error);
+            return response;
         }
     };
 
-    public updateRecordById(id:string, recordData:Record<string, unknown>) : Record<string, unknown> | undefined {
+    public updateRecordById(id:string, recordData:Record<string, unknown>) : ITableResponse {
+        const response:ITableResponse = this.getInitialResponse();
         try {
             const tableContentsRaw = fs.readFileSync(this._tablePath);
             if(tableContentsRaw) {
@@ -118,32 +112,47 @@ export class Table extends DbComponent implements ITable {
                     const newRecord = {...tableContents[foundRecordIndex], ...recordData};
                     tableContents[foundRecordIndex] = newRecord;
                     fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
-                    return newRecord;
+                    response.status = Responses.SUCCESS;
+                    response.data = [tableContents[foundRecordIndex]];
+                    return response;
+                } else {
+                    response.errors.push(new Error(`Could not find it with id '${id}' in table '${this._tableName}'`));
+                    return response;
                 }
-                return undefined;
+            } else {
+                response.errors.push(new Error('Error reading contents of table'));
+                return response;
             }
         } catch (e) {
-            return undefined;
+            response.errors.push(e as Error);
+            return response;
         }
     }
 
-    public removeRecord(id:string): boolean {
+    public removeRecord(id:string): ITableResponse {
+        const response:ITableResponse = this.getInitialResponse();
         try {
             const tableContentsRaw = fs.readFileSync(this._tablePath);
             if(tableContentsRaw) {
                 const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
                 const foundRecordIndex = tableContents.findIndex((record) => record._id === id);
                 if(foundRecordIndex > -1) {
+                    const recordCopy = cloneDeep(tableContents[foundRecordIndex]);
                     tableContents.splice(foundRecordIndex, 1);
                     fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
                     this._count--;
-                    return true;
+                    response.status = Responses.SUCCESS;
+                    response.data = [recordCopy];
+                    return response;
                 }
-                return false;
+                response.errors.push(new Error(`Could not find it with id '${id}' in table '${this._tableName}'`));
+                return response;
             }
-            return false;
+            response.errors.push(new Error('Error reading contents of table'));
+            return response;
         } catch(e) {
-            return false;
+            response.errors.push(e as Error);
+            return response;
         }
     }
 
@@ -154,10 +163,6 @@ export class Table extends DbComponent implements ITable {
     public getName():string {
         return this._tableName;
     }
-
-    private getFullTablePath(tableName:string):string {
-        return `${this.dbPath}/${tableName}.json`;
-    } 
 
     public rename(newName:string):boolean {
         try {
@@ -173,4 +178,20 @@ export class Table extends DbComponent implements ITable {
             return false;
         }
     }
+
+    private getInitialResponse(): ITableResponse {
+        return {
+            dbName: this.dbName, 
+            tableName: this._tableName, 
+            status:Responses.ERROR, 
+            data:[],
+            errors:[]
+        };
+    }
+
+    private getFullTablePath(tableName:string):string {
+        return `${this.dbPath}/${tableName}.json`;
+    } 
+
+    
 }

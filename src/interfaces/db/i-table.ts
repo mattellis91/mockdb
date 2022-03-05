@@ -1,10 +1,10 @@
-import { IInsertManyRepsonse, IInsertOneRepsonse } from "../repsonses";
+import { ITableResponse } from "../repsonses";
 
 export interface ITable {
-    insertOne(record:Record<string, unknown>): IInsertOneRepsonse
-    insertMany(records:Record<string, unknown>[]): IInsertManyRepsonse
-    retrieveRecordById(id:string) : Record<string, unknown> | undefined
-    updateRecordById(id:string, recordData:Record<string, unknown>) : Record<string, unknown> | undefined
+    insertOne(record:Record<string, unknown>): ITableResponse
+    insertMany(records:Record<string, unknown>[]): ITableResponse
+    retrieveRecordById(id:string) : ITableResponse
+    updateRecordById(id:string, recordData:Record<string, unknown>) : ITableResponse
     count():number
     getName():string
     rename(newName:string):boolean

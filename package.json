@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "cuid": "^2.1.8",
+    "lodash": "^4.17.21",
     "node-sql-parser": "^4.1.0"
   }
 }

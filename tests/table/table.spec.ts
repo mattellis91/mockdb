@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { expect } from "chai";
-import { Db, MockDb, Table } from '../../src';
+import { Db, MockDb, Responses, Table } from '../../src';
 const fsPromises = fs.promises;
 
 describe('Table tests', () => {
@@ -30,7 +30,7 @@ describe('Table tests', () => {
             prop1: 'value1',
             prop2: 'value2'
         });
-        expect(tableInsertResult.insertSuccessfull).to.be.true;
+        expect(tableInsertResult.status).to.equal(Responses.SUCCESS);
     });
 
     it('should sucessfully retrieve a record from a table when supplying a valid id', () => {
@@ -38,13 +38,14 @@ describe('Table tests', () => {
             prop1: 'value10',
             prop2: 'value20'
         });
-        const retrievedRecord = table.retrieveRecordById(tableInsertResult.record._id as string);
-        expect(retrievedRecord).to.not.be.undefined;        
+        const retrievedRecordResponse = table.retrieveRecordById(tableInsertResult.data[0]._id as string);
+        expect(retrievedRecordResponse.status).to.equal(Responses.SUCCESS);      
+        expect(retrievedRecordResponse.data.length).to.equal(1);  
     });
 
     it('should unsucessfully retrieve a record from a table when supplying an invalid id', () => {
-        const retrievedRecord = table.retrieveRecordById('aaa');
-        expect(retrievedRecord).to.be.undefined;
+        const retrievedRecordResponse = table.retrieveRecordById('aaa');
+        expect(retrievedRecordResponse.status).to.equal(Responses.ERROR);
     });
 
     it('should successfully remove a record from a table when supplying a valid id', () => {
@@ -52,13 +53,13 @@ describe('Table tests', () => {
             prop1: 'value234',
             prop2: 'value342'
         });
-        const removeResult = table.removeRecord(tableInsertResult.record._id as string);
-        expect(removeResult).to.be.true;
+        const removeResultResponse = table.removeRecord(tableInsertResult.data[0]._id as string);
+        expect(removeResultResponse.status).to.equal(Responses.SUCCESS);
     });
 
     it('should unsucessfully remove a record from a table when supplying an invalid id', () => {
-        const removeResult = table.removeRecord('aaa');
-        expect(removeResult).to.be.false;
+        const removeResultResponse = table.removeRecord('aaa');
+        expect(removeResultResponse.status).to.equal(Responses.ERROR);
     });
 
     
@@ -67,9 +68,9 @@ describe('Table tests', () => {
             prop1: 1,
             prop2: 2
         });
-        const updateResult = table.updateRecordById(tableInsertResult.record._id as string, {prop1:10});
-        expect(updateResult).to.not.be.undefined;
-        expect(updateResult?.prop1).to.equal(10);
+        const updateResultResponse = table.updateRecordById(tableInsertResult.data[0]._id as string, {prop1:10});
+        expect(updateResultResponse.status).to.equal(Responses.SUCCESS);
+        expect(updateResultResponse.data[0].prop1).to.equal(10);
     });
 
     it('should return all table names in database', () => {
@@ -101,7 +102,7 @@ describe('Table tests', () => {
             prop2: 3434
         }
         ]);
-        expect(insertManyResponse.insertSuccessfull).to.be.true;
+        expect(insertManyResponse.status).to.equal(Responses.SUCCESS);
         expect(table.count()).to.equal(5);
     });
 
@@ -115,7 +116,7 @@ describe('Table tests', () => {
             prop1: 'value1',
             prop2: 'value2'
         });
-        expect(tableInsertResult.insertSuccessfull).to.be.false;
+        expect(tableInsertResult.status).to.equal(Responses.ERROR);
     });
 
 });
