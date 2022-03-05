@@ -5,7 +5,7 @@ import { MockDb } from './mockDb';
 import { ITable, ITableResponse } from '../interfaces';
 import { Responses } from './responses';
 import { cloneDeep } from 'lodash';
-import {Parser} from 'node-sql-parser';
+import {AST, Parser} from 'node-sql-parser';
 import * as util from 'util';
 import { QueryHelper } from '../query/queryHelper';
 
@@ -65,8 +65,8 @@ export class Table extends DbComponent implements ITable {
             const tableContentsRaw = fs.readFileSync(this._tablePath);
             if(tableContentsRaw) {
                 const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
-                tableContents.concat(recordsToInsert);
-                fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
+                const newTableContents = tableContents.concat(recordsToInsert);
+                fs.writeFileSync(this._tablePath, JSON.stringify(newTableContents));
                 this._count+=records.length;
                 response.status = Responses.SUCCESS;
                 response.data = recordsToInsert;
@@ -106,16 +106,43 @@ export class Table extends DbComponent implements ITable {
         }
     };
 
-    //TODO: implement this
-    public retrieveRecords(query:string) {
-        const sqlParser = new Parser();
-        query = query.trim();
-        if(query.toLowerCase().startsWith('where')) {
-            console.log(`SELECT * from ${this._tableName} ` + query);
-            const queryAST = sqlParser.parse(`SELECT * FROM ${this._tableName} ` + query);
-            console.log(util.inspect(queryAST, {showHidden: false, depth: null, colors: true}))
-        } else {
-            throw Error();
+    public retrieveRecords(query?:string): ITableResponse {
+        const response = this.getInitialResponse();
+        if(query){
+            const sqlParser = new Parser();
+            query = query.trim();
+            if(query.toLowerCase().startsWith('where')) {
+                try{
+                    const queryAST = sqlParser.parse(`SELECT * FROM ${this._tableName} ` + query);
+                    const tableContentsRaw = fs.readFileSync(this._tablePath);
+                    if(tableContentsRaw) {
+                        const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[]; 
+                        this._queryHelper.filterTableContents(tableContents, (queryAST.ast as unknown as Record<string, Record<string, unknown>>).where)
+                        response.status = Responses.SUCCESS;
+                        return response;
+                    } else {
+                        response.errors.push(new Error('Error reading contents of table'));
+                        return response;
+                    }
+                } catch (e) {
+                    response.errors.push(e as Error);
+                    return response;
+                }
+            } else {
+                response.errors.push(new Error("retrieval query must start with 'WHERE' keyword"));
+                return response;
+            }
+        } else { //retrieve all records if no query given
+            const tableContentsRaw = fs.readFileSync(this._tablePath);
+            if(tableContentsRaw) {
+                const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[]; 
+                response.status = Responses.SUCCESS;
+                response.data = tableContents;
+                return response;
+            } else {
+                response.errors.push(new Error('Error reading contents of table'));
+                return response;
+            }
         }
     }
 

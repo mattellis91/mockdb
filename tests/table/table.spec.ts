@@ -7,16 +7,16 @@ describe('Table tests', () => {
     let connection:Db;
     let table:Table;
     before(async () => {
-        if(fs.existsSync('./mockdb')){
-            await fsPromises.rmdir('./mockdb', {recursive: true});
+        if(fs.existsSync('./mockdb/')){
+            await fsPromises.rmdir('./mockdb/', {recursive: true});
         }
         await MockDb.createDb('tabletest');
         connection = MockDb.connect('tabletest');
     });
     
     after(async () => {
-        if(fs.existsSync('./mockdb')){
-            await fsPromises.rmdir('./mockdb', {recursive: true});
+        if(fs.existsSync('./mockdb/')){
+            await fsPromises.rmdir('./mockdb/', {recursive: true});
         }
     });
 
@@ -48,6 +48,22 @@ describe('Table tests', () => {
         expect(retrievedRecordResponse.status).to.equal(Responses.ERROR);
     });
 
+    it('should successfully update an existing record', () => {
+        const tableInsertResult = table.insertOne({
+            prop1: 1,
+            prop2: 2
+        });
+        const updateResultResponse = table.updateRecordById(tableInsertResult.data[0]._id as string, {prop1:10});
+        expect(updateResultResponse.status).to.equal(Responses.SUCCESS);
+        expect(updateResultResponse.data[0].prop1).to.equal(10);
+    });
+
+    it('should successfully retrieve all records', () => {
+        const allRecordsRetrievalResponse = table.retrieveRecords();
+        expect(allRecordsRetrievalResponse.status).to.equal(Responses.SUCCESS);
+        expect(allRecordsRetrievalResponse.data.length).to.equal(3);
+    });
+
     it('should successfully remove a record from a table when supplying a valid id', () => {
         const tableInsertResult = table.insertOne({
             prop1: 'value234',
@@ -62,16 +78,6 @@ describe('Table tests', () => {
         expect(removeResultResponse.status).to.equal(Responses.ERROR);
     });
 
-    
-    it('should successfully update an existing record', () => {
-        const tableInsertResult = table.insertOne({
-            prop1: 1,
-            prop2: 2
-        });
-        const updateResultResponse = table.updateRecordById(tableInsertResult.data[0]._id as string, {prop1:10});
-        expect(updateResultResponse.status).to.equal(Responses.SUCCESS);
-        expect(updateResultResponse.data[0].prop1).to.equal(10);
-    });
 
     it('should return all table names in database', () => {
         connection.table('test-table-2');

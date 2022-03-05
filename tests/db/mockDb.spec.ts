@@ -6,14 +6,14 @@ const fsPromises = fs.promises;
 describe('Database tests', () => {
 
     before(async () => {
-        if(fs.existsSync('./mockdb')){
-            await fsPromises.rmdir('./mockdb', {recursive: true});
+        if(fs.existsSync('./mockdb/')){
+            await fsPromises.rmdir('./mockdb/', {recursive: true});
         }
     });
 
     after(async () => {
-        if(fs.existsSync('./mockdb')){
-            await fsPromises.rmdir('./mockdb', {recursive: true});
+        if(fs.existsSync('./mockdb/')){
+            await fsPromises.rmdir('./mockdb/', {recursive: true});
         }
     });
 

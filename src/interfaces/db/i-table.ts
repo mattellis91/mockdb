@@ -8,4 +8,5 @@ export interface ITable {
     count():number
     getName():string
     rename(newName:string):boolean
+    retrieveRecords(query:string): ITableResponse
 }
