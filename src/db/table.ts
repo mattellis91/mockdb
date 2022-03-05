@@ -5,15 +5,20 @@ import { MockDb } from './mockDb';
 import { ITable, ITableResponse } from '../interfaces';
 import { Responses } from './responses';
 import { cloneDeep } from 'lodash';
+import {Parser} from 'node-sql-parser';
+import * as util from 'util';
+import { QueryHelper } from '../query/queryHelper';
 
 export class Table extends DbComponent implements ITable {
     private _tableName:string;
     private _tablePath:string;
     private _count:number;
+    private _queryHelper:QueryHelper;
     constructor(dbName:string, dbPath:string, tableName:string, newTable:boolean) {
         super(dbName, dbPath);
         this._tableName = tableName;
         this._tablePath = this.getFullTablePath(tableName);
+        this._queryHelper = new QueryHelper();
         if(newTable) {
             this._count = 0;
         } else {
@@ -100,6 +105,19 @@ export class Table extends DbComponent implements ITable {
             return response;
         }
     };
+
+    //TODO: implement this
+    public retrieveRecords(query:string) {
+        const sqlParser = new Parser();
+        query = query.trim();
+        if(query.toLowerCase().startsWith('where')) {
+            console.log(`SELECT * from ${this._tableName} ` + query);
+            const queryAST = sqlParser.parse(`SELECT * FROM ${this._tableName} ` + query);
+            console.log(util.inspect(queryAST, {showHidden: false, depth: null, colors: true}))
+        } else {
+            throw Error();
+        }
+    }
 
     public updateRecordById(id:string, recordData:Record<string, unknown>) : ITableResponse {
         const response:ITableResponse = this.getInitialResponse();

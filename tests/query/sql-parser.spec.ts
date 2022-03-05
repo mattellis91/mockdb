@@ -1,8 +1,40 @@
-import {Parser} from 'node-sql-parser';
-describe('sql parser test', () => {
-    it('should build sql ast', () => {
-        const p = new Parser();
-        const sql = "SELECT * from Cats WHERE name='cat'"
-        //console.log(p.astify(sql));
+import fs from 'fs';
+import { expect } from "chai";
+import { Db, MockDb, Responses, Table } from '../../src';
+const fsPromises = fs.promises;
+
+describe('sql query test', () => {
+    let connection:Db;
+    let table:Table;
+    before(async () => {
+        if(fs.existsSync('./mockdb')){
+            await fsPromises.rmdir('./mockdb', {recursive: true});
+        }
+        await MockDb.createDb('tabletest');
+        connection = MockDb.connect('query-test');
+        table = connection.table('connectionTable');
+    });
+    
+    after(async () => {
+        if(fs.existsSync('./mockdb')){
+            await fsPromises.rmdir('./mockdb', {recursive: true});
+        }
+    });
+
+    it('should return records that match given query', () => {
+        table.insertMany([{
+            prop1: 10,
+            prop2: 'aaa'
+        },
+        {
+            prop1: 20,
+            prop2: 'asdasdasdsa'
+        },
+        {
+            prop1: 50,
+            prop2: 'vvv'
+        }
+        ]);
+        table.retrieveRecords("WHERE prop1 < 30");
     });
 });
