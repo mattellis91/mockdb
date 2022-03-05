@@ -1,7 +1,8 @@
-import { IInsertOneRepsonse } from "../repsonses";
+import { IInsertManyRepsonse, IInsertOneRepsonse } from "../repsonses";
 
 export interface ITable {
     insertOne(record:Record<string, unknown>): IInsertOneRepsonse
+    insertMany(records:Record<string, unknown>[]): IInsertManyRepsonse
     retrieveRecordById(id:string) : Record<string, unknown> | undefined
     updateRecordById(id:string, recordData:Record<string, unknown>) : Record<string, unknown> | undefined
     count():number

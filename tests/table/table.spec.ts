@@ -92,6 +92,19 @@ describe('Table tests', () => {
         expect(connection.listTables().length).to.equal(2);
     });
 
+    it('should sucessfully insert many records into a table', () => {
+        const insertManyResponse = table.insertMany([{
+            prop1: 4,
+            prop2: 43
+        },{
+            prop1: 10,
+            prop2: 3434
+        }
+        ]);
+        expect(insertManyResponse.insertSuccessfull).to.be.true;
+        expect(table.count()).to.equal(5);
+    });
+
     it('should remove an existing table', () => {
         const dropTableResult = connection.dropTable('test-table-renamed');
         expect(dropTableResult).to.be.true;

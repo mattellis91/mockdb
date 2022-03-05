@@ -3,6 +3,7 @@ import { DbComponent } from "../db/dbComponent";
 import { IInsertOneRepsonse, ITable } from "..";
 import cuid from 'cuid';
 import { MockDb } from './mockDb';
+import { IInsertManyRepsonse } from '../interfaces';
 
 export class Table extends DbComponent implements ITable {
     private _tableName:string;
@@ -57,6 +58,39 @@ export class Table extends DbComponent implements ITable {
                 tableName: this._tableName,
                 insertSuccessfull: false,
                 record:recordToInsert
+            }
+        }
+    }
+
+    public insertMany(records:Record<string, unknown>[]): IInsertManyRepsonse {
+        const recordsToInsert = records.map((record) => {return {_id:cuid(), ...record}});
+        try {
+            const tableContentsRaw = fs.readFileSync(this._tablePath);
+            if(tableContentsRaw) {
+                const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
+                tableContents.concat(recordsToInsert);
+                fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
+                this._count+=records.length;
+                return {
+                    dbName: this.dbName,
+                    tableName: this._tableName,
+                    insertSuccessfull: true,
+                    records:recordsToInsert
+                }
+            } else {
+                return {
+                    dbName: this.dbName,
+                    tableName: this._tableName,
+                    insertSuccessfull: false,
+                    records:recordsToInsert
+                }
+            }
+        } catch(e) {
+            return {
+                dbName: this.dbName,
+                tableName: this._tableName,
+                insertSuccessfull: false,
+                records:recordsToInsert
             }
         }
     }
@@ -133,6 +167,7 @@ export class Table extends DbComponent implements ITable {
             }
             fs.renameSync(this.getFullTablePath(this._tableName), newNamePath);
             this._tableName = newName;
+            this._tablePath = this.getFullTablePath(newName);
             return true;
         } catch(e) {
             return false;
