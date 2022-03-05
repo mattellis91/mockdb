@@ -24,9 +24,9 @@ export class Db implements IDB {
         const fileContents = `[]`;
         if(!MockDb.exists(tablePath)) {
             fs.writeFileSync(tablePath, fileContents);
-            return new Table(this.dbName, this.dbPath, tableName);
+            return new Table(this.dbName, this.dbPath, tableName, true);
         } else {
-            return new Table(this.dbName, this.dbPath, tableName);
+            return new Table(this.dbName, this.dbPath, tableName, false);
         }
     }
 

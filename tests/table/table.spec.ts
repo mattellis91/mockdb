@@ -39,7 +39,7 @@ describe('Table tests', () => {
             prop2: 'value20'
         });
         const retrievedRecord = table.retrieveRecordById(tableInsertResult.record._id as string);
-        expect(retrievedRecord).to.not.be.undefined;
+        expect(retrievedRecord).to.not.be.undefined;        
     });
 
     it('should unsucessfully retrieve a record from a table when supplying an invalid id', () => {
@@ -80,8 +80,20 @@ describe('Table tests', () => {
         expect(tableNames[1]).to.equal('test-table-2');
     });
 
+    it('should successfully return the number of records in a table', () => {
+        expect(table.count()).to.equal(3);
+    });
+
+    it('should successfully rename the name of the table', () => {
+        const renameResult = table.rename('test-table-renamed');
+        const newTableConnection = connection.table('test-table-renamed');  
+        expect(renameResult).to.be.true;
+        expect(newTableConnection.count()).to.equal(3);
+        expect(connection.listTables().length).to.equal(2);
+    });
+
     it('should remove an existing table', () => {
-        const dropTableResult = connection.dropTable('test-table');
+        const dropTableResult = connection.dropTable('test-table-renamed');
         expect(dropTableResult).to.be.true;
     });
 

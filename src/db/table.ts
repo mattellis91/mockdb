@@ -2,14 +2,30 @@ import fs, { exists } from 'fs';
 import { DbComponent } from "../db/dbComponent";
 import { IInsertOneRepsonse, ITable } from "..";
 import cuid from 'cuid';
+import { MockDb } from './mockDb';
 
 export class Table extends DbComponent implements ITable {
     private _tableName:string;
     private _tablePath:string;
-    constructor(dbName:string, dbPath:string, tableName:string) {
+    private _count:number;
+    constructor(dbName:string, dbPath:string, tableName:string, newTable:boolean) {
         super(dbName, dbPath);
         this._tableName = tableName;
-        this._tablePath = this.dbPath + "/" + tableName + ".json";
+        this._tablePath = this.getFullTablePath(tableName);
+        if(newTable) {
+            this._count = 0;
+        } else {
+            try {
+                const tableContentsRaw = fs.readFileSync(this._tablePath);
+                if(tableContentsRaw) {
+                    this._count = (JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[]).length;
+                } else {
+                    this._count = -1;
+                }
+            } catch (e) {
+                this._count = -1;
+            }
+        }
     }
     
     public insertOne(record:Record<string, unknown>): IInsertOneRepsonse {
@@ -20,6 +36,7 @@ export class Table extends DbComponent implements ITable {
                 const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[];
                 tableContents.unshift(recordToInsert);
                 fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
+                this._count++;
                 return {
                     dbName: this.dbName,
                     tableName: this._tableName,
@@ -85,11 +102,38 @@ export class Table extends DbComponent implements ITable {
                 if(foundRecordIndex > -1) {
                     tableContents.splice(foundRecordIndex, 1);
                     fs.writeFileSync(this._tablePath, JSON.stringify(tableContents));
+                    this._count--;
                     return true;
                 }
                 return false;
             }
             return false;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    public count():number {
+        return this._count;
+    }
+
+    public getName():string {
+        return this._tableName;
+    }
+
+    private getFullTablePath(tableName:string):string {
+        return `${this.dbPath}/${tableName}.json`;
+    } 
+
+    public rename(newName:string):boolean {
+        try {
+            const newNamePath = this.getFullTablePath(newName);
+            if(MockDb.exists(newNamePath)) {
+                return false;
+            }
+            fs.renameSync(this.getFullTablePath(this._tableName), newNamePath);
+            this._tableName = newName;
+            return true;
         } catch(e) {
             return false;
         }
