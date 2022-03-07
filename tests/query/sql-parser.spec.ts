@@ -35,6 +35,8 @@ describe('sql query test', () => {
             prop2: 'vvv'
         }
         ]);
-        table.retrieveRecords("WHERE prop1 < 30 AND prop2 = 'aaa'");
+        // table.retrieveRecords("WHERE prop1 < 30 AND prop2 = 'aaa'");
+        table.retrieveRecords("WHERE prop1 = 10")
+        //table.retrieveRecords("WHERE prop1 < 30 AND prop2 = 'aaa' OR prop2 > 1");
     });
 });
