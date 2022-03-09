@@ -1,7 +1,7 @@
-import { Table } from "../..";
+import { Collection } from "../../db";
 
 export interface IDB {
-    table(tableName:string): Table;
+    collection(tableName:string): Collection;
     dropTable(tableName:string): boolean;
     listTables():string[];
 }

@@ -1,6 +1,6 @@
-import { DbComponent, MockDb, Table } from ".";
+import { MockDb, Collection } from ".";
 import { IDB } from "..";
-import fs, { exists } from 'fs';
+import fs from 'fs';
 
 export class Db implements IDB {
     protected dbName:string;
@@ -19,14 +19,14 @@ export class Db implements IDB {
         this.tables = [];
     }
 
-    public table(tableName:string):Table {
+    public collection(tableName:string):Collection {
         const tablePath = this.getFullTablePath(tableName);
         const fileContents = `[]`;
         if(!MockDb.exists(tablePath)) {
             fs.writeFileSync(tablePath, fileContents);
-            return new Table(this.dbName, this.dbPath, tableName, true);
+            return new Collection(this.dbName, this.dbPath, tableName, true);
         } else {
-            return new Table(this.dbName, this.dbPath, tableName, false);
+            return new Collection(this.dbName, this.dbPath, tableName, false);
         }
     }
 

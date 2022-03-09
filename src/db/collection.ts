@@ -1,15 +1,15 @@
 import fs from 'fs';
-import { DbComponent } from "../db/dbComponent";
+import { DbComponent } from "./dbComponent";
 import cuid from 'cuid';
 import { MockDb } from './mockDb';
-import { ITable, ITableResponse } from '../interfaces';
+import { ICollection, ITableResponse } from '../interfaces';
 import { Responses } from './responses';
 import { cloneDeep } from 'lodash';
 import {AST, Parser} from 'node-sql-parser';
 import * as util from 'util';
 import { QueryHelper } from '../query/queryHelper';
 
-export class Table extends DbComponent implements ITable {
+export class Collection extends DbComponent implements ICollection {
     private _tableName:string;
     private _tablePath:string;
     private _count:number;
@@ -117,7 +117,7 @@ export class Table extends DbComponent implements ITable {
                     const tableContentsRaw = fs.readFileSync(this._tablePath);
                     if(tableContentsRaw) {
                         const tableContents = JSON.parse(tableContentsRaw as unknown as string) as Record<string, unknown>[]; 
-                        this._queryHelper.filterTableContents(tableContents, (queryAST.ast as unknown as Record<string, Record<string, unknown>>).where)
+                        //this._queryHelper.filterTableContents(tableContents, (queryAST.ast as unknown as Record<string, Record<string, unknown>>).where)
                         response.status = Responses.SUCCESS;
                         return response;
                     } else {

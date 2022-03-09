@@ -1,6 +1,6 @@
 import { ITableResponse } from "../repsonses";
 
-export interface ITable {
+export interface ICollection {
     insertOne(record:Record<string, unknown>): ITableResponse
     insertMany(records:Record<string, unknown>[]): ITableResponse
     retrieveRecordById(id:string) : ITableResponse
