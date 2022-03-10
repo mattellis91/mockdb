@@ -1,3 +1,3 @@
 export interface IDocumentFilter {
-    $or : Record<string, any>
+    $or : Record<string, unknown>
 };

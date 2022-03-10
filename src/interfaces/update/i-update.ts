@@ -1,4 +1,5 @@
 export interface IUpdateDocumentFilter {
-    $set?: Record<string, any>
-    $addFields? : Record<string , any>
+    $set?: Record<string, unknown>
+    $addFields? : Record<string , unknown>
+    [x: string | number | symbol]: unknown;
 }

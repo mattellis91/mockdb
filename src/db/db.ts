@@ -5,7 +5,7 @@ import fs from 'fs';
 export class Db implements IDB {
     protected dbName:string;
     protected dbPath:string ;
-    protected tables:string[] | undefined;
+    protected collections:string[] | undefined;
     
     constructor(dbName:string) {
         const dbPath = './mockdb/'+dbName;
@@ -16,38 +16,38 @@ export class Db implements IDB {
         }
         this.dbName = dbName;
         this.dbPath = dbPath
-        this.tables = [];
+        this.collections = [];
     }
 
-    public collection(tableName:string):Collection {
-        const tablePath = this.getFullTablePath(tableName);
-        const fileContents = `[]`;
-        if(!MockDb.exists(tablePath)) {
-            fs.writeFileSync(tablePath, fileContents);
-            return new Collection(this.dbName, this.dbPath, tableName, true);
+    public collection(collectionName:string):Collection {
+        const collectionPath = this.getFullCollectionPath(collectionName);
+        const fileContents = `{}`;
+        if(!MockDb.exists(collectionPath)) {
+            fs.writeFileSync(collectionPath, fileContents);
+            return new Collection(this.dbName, this.dbPath, collectionName, true);
         } else {
-            return new Collection(this.dbName, this.dbPath, tableName, false);
+            return new Collection(this.dbName, this.dbPath, collectionName, false);
         }
     }
 
-    public dropTable(tableName:string):boolean {
-        const tablePath = this.getFullTablePath(tableName);
-        if(!MockDb.exists(tablePath)) {
+    public dropCollection(collectionName:string):boolean {
+        const collectionPath = this.getFullCollectionPath(collectionName);
+        if(!MockDb.exists(collectionPath)) {
             return false;
         }
-        fs.unlinkSync(tablePath);
+        fs.unlinkSync(collectionPath);
         return true;
     }
 
-    public listTables():string[] {
-        const tableNames:string[] = [];
-        fs.readdirSync(this.dbPath).forEach(table => {
-            tableNames.push(MockDb.removeExtensionFromFileName(table));
+    public listCollections():string[] {
+        const collectionNames:string[] = [];
+        fs.readdirSync(this.dbPath).forEach(collection => {
+            collectionNames.push(MockDb.removeExtensionFromFileName(collection));
         });
-        return tableNames;
+        return collectionNames;
     }
 
-    private getFullTablePath(tableName:string):string {
-        return `${this.dbPath}/${tableName}.json`;
+    private getFullCollectionPath(collectionName:string):string {
+        return `${this.dbPath}/${collectionName}.json`;
     } 
 }
