@@ -81,7 +81,7 @@ export class Collection extends DbComponent implements ICollection {
         }
     }
 
-    public retrieveRecordById(id:string) : ICollectionResponse {
+    public findById(id:string) : ICollectionResponse {
         const response:ICollectionResponse = this.getInitialResponse();
         try {
             const tableContentsRaw = fs.readFileSync(this._collectionPath);

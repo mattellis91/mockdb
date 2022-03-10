@@ -38,13 +38,13 @@ describe('Collection tests', () => {
             prop1: 'value10',
             prop2: 'value20'
         });
-        const retrievedRecordResponse = collection.retrieveRecordById(tableInsertResult.data[0]._id as string);
+        const retrievedRecordResponse = collection.findById(tableInsertResult.data[0]._id as string);
         expect(retrievedRecordResponse.status).to.equal(Responses.SUCCESS);      
         expect(retrievedRecordResponse.data.length).to.equal(1);  
     });
 
     it('should unsucessfully retrieve a record from a table when supplying an invalid id', () => {
-        const retrievedRecordResponse = collection.retrieveRecordById('aaa');
+        const retrievedRecordResponse = collection.findById('aaa');
         expect(retrievedRecordResponse.status).to.equal(Responses.ERROR);
     });
 
