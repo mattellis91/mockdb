@@ -112,14 +112,14 @@ export class Collection extends DbComponent implements ICollection {
         const response:ICollectionResponse = this.getInitialResponse();
         try {
             const collectionContentsRaw = fs.readFileSync(this._collectionPath);
+            const documentsMap = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
             if(!filter) {
-                const documentsMap = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
                 const documents = this.convertMapToArray(documentsMap);
                 response.status = Responses.SUCCESS;
                 response.data = documents;
                 return response;
             } else {
-                //TODO: handle filtering
+                console.log(this._filterHelper.findDocumentsByFilter(documentsMap,filter));
                 return response;
             }
         } catch (e) {
