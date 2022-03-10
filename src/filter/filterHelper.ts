@@ -1,6 +1,6 @@
-import { IQueryHelper } from "../interfaces";
+import { IFilterHelper } from "../interfaces/filter";
 
-export class QueryHelper implements IQueryHelper{
+export class FilterHelper implements IFilterHelper{
 
     // public filterTableContents(tableContents:Record<string, unknown>[], whereRootNode:Record<string, unknown>) {
     //     console.log(tableContents);

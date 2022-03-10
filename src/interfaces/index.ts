@@ -1,3 +1,4 @@
 export * from './db';
-export * from './query';
+export * from './update';
+export * from './filter';
 export * from './repsonses';

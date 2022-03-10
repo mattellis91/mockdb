@@ -1,6 +1,6 @@
-export interface ITableResponse {
+export interface ICollectionResponse {
     dbName:string,
-    tableName:string,
+    collectionName:string,
     status:number,
     data:Record<string, unknown>[]
     errors:Error[]

@@ -1,1 +1,1 @@
-export * from './i-tableResponse';
+export * from './i-collectionResponse';
