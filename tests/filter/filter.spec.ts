@@ -55,4 +55,24 @@ describe('filter Tests', () => {
         expect(findResponse.data[1].prop1).to.equal(10);
         expect(findResponse.data[1].prop2).to.equal('aaa');
     });
+
+    it('should return all documents that meet the given filter requirements using $gt filter operator', () => {
+        const findResponse = collection.find({prop1: {$gt: 20}});
+        expect(findResponse.data.length).to.equal(1);
+    });
+
+    it('should return all documents that meet the given filter requirements using $gte filter operator', () => {
+        const findResponse = collection.find({prop1: {$gte: 20}});
+        expect(findResponse.data.length).to.equal(2);
+    });
+
+    it('should return all documents that meet the given filter requirements using $lt filter operator', () => {
+        const findResponse = collection.find({prop1: {$lt: 20}});
+        expect(findResponse.data.length).to.equal(2);
+    });
+
+    it('should return all documents that meet the given filter requirements using $lte filter operator', () => {
+        const findResponse = collection.find({prop1: {$lte: 20}});
+        expect(findResponse.data.length).to.equal(3);
+    });
 })
