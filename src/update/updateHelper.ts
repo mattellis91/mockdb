@@ -1,7 +1,7 @@
 import { cloneDeep } from "lodash";
-import { IUpdateDocumentFilter, IUpdateHelper } from "../interfaces";
+import { IUpdateHelper } from "../interfaces";
 
-export class UpdateHelper implements IUpdateHelper{
+export class UpdateHelper implements IUpdateHelper {
 
     public getUpdatedDocument(originalDocument:Record<string, unknown>, setFilter:Record<string, unknown>) {
         const newDocument = cloneDeep(originalDocument);

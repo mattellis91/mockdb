@@ -48,20 +48,10 @@ describe('Collection tests', () => {
         expect(retrieveddocumentResponse.status).to.equal(Responses.ERROR);
     });
 
-    it('should successfully update an existing document', () => {
-        const collectionInsertResult = collection.insertOne({
-            prop1: 1,
-            prop2: 2
-        });
-        const updateResultResponse = collection.updateById(collectionInsertResult.data[0]._id as string, {$set: {prop1:10}});
-        expect(updateResultResponse.status).to.equal(Responses.SUCCESS);
-        expect(updateResultResponse.data[0].prop1).to.equal(10);
-    });
-
     it('should successfully retrieve all documents', () => {
         const alldocumentsRetrievalResponse = collection.find();
         expect(alldocumentsRetrievalResponse.status).to.equal(Responses.SUCCESS);
-        expect(alldocumentsRetrievalResponse.data.length).to.equal(3);
+        expect(alldocumentsRetrievalResponse.data.length).to.equal(2);
     });
 
     it('should successfully remove a document from a collection when supplying a valid id', () => {
@@ -88,7 +78,7 @@ describe('Collection tests', () => {
     });
 
     it('should successfully return the number of documents in a collection', () => {
-        expect(collection.count()).to.equal(3);
+        expect(collection.count()).to.equal(2);
     });
 
     it('should return all documents that meet the given filter requirements', () => {
@@ -99,7 +89,7 @@ describe('Collection tests', () => {
         const renameResult = collection.rename('test-collection-renamed');
         const newcollectionConnection = connection.collection('test-collection-renamed');  
         expect(renameResult).to.be.true;
-        expect(newcollectionConnection.count()).to.equal(3);
+        expect(newcollectionConnection.count()).to.equal(2);
         expect(connection.listCollections().length).to.equal(2);
     });
 
@@ -113,7 +103,7 @@ describe('Collection tests', () => {
         }
         ]);
         expect(insertManyResponse.status).to.equal(Responses.SUCCESS);
-        expect(collection.count()).to.equal(5);
+        expect(collection.count()).to.equal(4);
     });
 
     it('should remove an existing collection', () => {

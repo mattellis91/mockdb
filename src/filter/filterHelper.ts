@@ -3,7 +3,7 @@ import { IDocumentFilter, IFilterHelper } from "../interfaces/filter";
 
 export class FilterHelper implements IFilterHelper{
 
-    public findDocumentsByFilter(documentsMap:Record<string, Record<string, unknown>>, filterDocumentFilter:IDocumentFilter) : Record<string, unknown>[] {
+    public findDocumentsByFilter(documentsMap:Record<string, Record<string, unknown>>, filterDocumentFilter:IDocumentFilter, findOne = false) : Record<string, unknown>[] {
         const documentsToReturn:Record<string, unknown>[] = [];
         for(const documentKey of Object.keys(documentsMap)) {
             for(const filterKey of Object.keys(filterDocumentFilter)) {

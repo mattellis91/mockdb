@@ -146,6 +146,14 @@ export class Collection extends DbComponent implements ICollection {
                     response.data = [newRecord];
                     return response;
                 } else {
+                    if(updateFilter.upsert) {
+                        const newDocument = this._updateHelper.getUpdatedDocument({_id:id}, updateFilter.$set ?? {});
+                        collectionContents[id] = newDocument;
+                        fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                        response.status = Responses.SUCCESS;
+                        response.data = [newDocument];
+                        return response;
+                    }
                     response.errors.push(new Error(`Could not find it with id '${id}' in collection '${this._collectionName}'`));
                     return response;
                 }
@@ -154,6 +162,47 @@ export class Collection extends DbComponent implements ICollection {
                 return response;
             }
         } catch (e) {
+            response.errors.push(e as Error);
+            return response;
+        }
+    }
+
+    public updateOne(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter): ICollectionResponse {
+        const response:ICollectionResponse = this.getInitialResponse();
+        if(!Object.keys(filter).length) {
+            response.errors.push(new Error(`No update filter set for retrieving document`));
+            return response;
+        }
+        try {
+            const collectionContentsRaw = fs.readFileSync(this._collectionPath);
+            if(collectionContentsRaw) {
+                const collectionContents = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
+                const foundDocuments = this._filterHelper.findDocumentsByFilter(collectionContents,filter, true);
+                if(foundDocuments.length) {
+                    const newDocument = this._updateHelper.getUpdatedDocument(foundDocuments[0], updateFilter.$set ?? {});
+                    collectionContents[newDocument._id as string] = newDocument;
+                    fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                    response.status = Responses.SUCCESS;
+                    response.data = [newDocument];
+                    return response;
+                } else {
+                    if(updateFilter.upsert) {
+                        const newId = cuid();
+                        const newDocument = this._updateHelper.getUpdatedDocument({_id:newId}, updateFilter.$set ?? {});
+                        collectionContents[newId] = newDocument;
+                        fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                        response.status = Responses.SUCCESS;
+                        response.data = [newDocument];
+                        return response;
+                    }
+                    response.errors.push(new Error(`Could not find any documents that meet filter conditions in '${this._collectionName}'`));
+                    return response;
+                }
+            } else {
+                response.errors.push(new Error('Error reading contents of collection'));
+                return response;
+            }
+        }  catch(e) {
             response.errors.push(e as Error);
             return response;
         }
