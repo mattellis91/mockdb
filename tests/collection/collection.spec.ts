@@ -53,7 +53,7 @@ describe('Collection tests', () => {
             prop1: 1,
             prop2: 2
         });
-        const updateResultResponse = collection.updateById(collectionInsertResult.data[0]._id as string, {prop1:10});
+        const updateResultResponse = collection.updateById(collectionInsertResult.data[0]._id as string, {$set: {prop1:10}});
         expect(updateResultResponse.status).to.equal(Responses.SUCCESS);
         expect(updateResultResponse.data[0].prop1).to.equal(10);
     });

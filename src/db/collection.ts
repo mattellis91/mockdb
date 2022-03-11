@@ -7,17 +7,20 @@ import { Responses } from './responses';
 import { cloneDeep } from 'lodash';
 import * as util from 'util';
 import { FilterHelper } from '../filter/filterHelper';
+import { UpdateHelper } from '../update';
 
 export class Collection extends DbComponent implements ICollection {
     private _collectionName:string;
     private _collectionPath:string;
     private _count:number;
     private _filterHelper:FilterHelper;
+    private _updateHelper:UpdateHelper;
     constructor(dbName:string, dbPath:string, collectionName:string, newCollection:boolean) {
         super(dbName, dbPath);
         this._collectionName = collectionName;
         this._collectionPath = this.getFullCollectionPath(collectionName);
         this._filterHelper = new FilterHelper();
+        this._updateHelper = new UpdateHelper();
         if(newCollection) {
             this._count = 0;
         } else {
@@ -128,7 +131,7 @@ export class Collection extends DbComponent implements ICollection {
         }
     }
 
-    public updateById(id:string, recordData:IUpdateDocumentFilter) : ICollectionResponse {
+    public updateById(id:string, updateFilter:IUpdateDocumentFilter) : ICollectionResponse {
         const response:ICollectionResponse = this.getInitialResponse();
         try {
             const collectionContentsRaw = fs.readFileSync(this._collectionPath);
@@ -136,7 +139,7 @@ export class Collection extends DbComponent implements ICollection {
                 const collectionContents = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
                 const foundRecord = collectionContents[id] as Record<string, unknown>;
                 if(foundRecord) {
-                    const newRecord = {...foundRecord, ...recordData};
+                    const newRecord = this._updateHelper.getUpdatedDocument(foundRecord, updateFilter.$set ?? {});
                     collectionContents[id] = newRecord;
                     fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
                     response.status = Responses.SUCCESS;
