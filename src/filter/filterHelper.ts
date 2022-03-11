@@ -27,12 +27,12 @@ export class FilterHelper implements IFilterHelper{
         return documentsToReturn;
     } 
 
-    private documentPropertyValueEqualsLiteralValue(documentPropValue: unknown, value:unknown): boolean {
-        return documentPropValue === value;
+    private documentPropertyValueEqualsLiteralValue(documentPropValue: unknown, filterValue:unknown): boolean {
+        return documentPropValue === filterValue;
     }
     
-    private documentPropertyValueNotEqualsLiteralValue(documentPropValue: unknown, value:unknown): boolean {
-        return documentPropValue !== value;
+    private documentPropertyValueNotEqualsLiteralValue(documentPropValue: unknown, filterValue:unknown): boolean {
+        return documentPropValue !== filterValue;
     }
 
     private evaluateFilterQuery(documentPropValue: unknown, query:Record<string, unknown>) : boolean {
@@ -48,26 +48,43 @@ export class FilterHelper implements IFilterHelper{
             case filterOperators.LessThan:
             case filterOperators.LessThanOrEqualTo:
                 return this.evaluateNumericalComparison(documentPropValue, queryValue, queryKey);
+            case filterOperators.In:
+            case filterOperators.NotIn:
+                return this.evaluateArrayIncludes(documentPropValue, queryValue, queryKey);
             default:
                 throw new Error(`Unknown query operator '${queryKey}'`);
         }
     }
 
-    private evaluateNumericalComparison(documentPropValue: unknown, value:unknown, operator:string): boolean {
+    private evaluateNumericalComparison(documentPropValue: unknown, filterValue:unknown, operator:string): boolean {
         const documentValueType = typeof(documentPropValue);
-        const valueType = typeof(value);
+        const valueType = typeof(filterValue);
         if(documentValueType === 'object' || valueType === 'object') {
             throw new Error(`cannot peform operation ${operator} against values of type object`);
         }
         switch(operator) {
             case filterOperators.GreaterThan:    
-                return (documentPropValue as number | string) > (value as number | string);
+                return (documentPropValue as number | string) > (filterValue as number | string);
             case filterOperators.GreaterThanOrEqual:
-                return (documentPropValue as number | string) >= (value as number | string);
+                return (documentPropValue as number | string) >= (filterValue as number | string);
             case filterOperators.LessThan:
-                return (documentPropValue as number | string) < (value as number | string);
+                return (documentPropValue as number | string) < (filterValue as number | string);
             case filterOperators.LessThanOrEqualTo:
-                return (documentPropValue as number | string) <= (value as number | string);
+                return (documentPropValue as number | string) <= (filterValue as number | string);
+            default:
+                throw new Error(`Unknown query operator '${operator}'`);
+        }
+    }
+
+    private evaluateArrayIncludes(documentPropValue: unknown, filterValue:unknown, operator:string): boolean {
+        if(!Array.isArray(filterValue)) {
+            throw new Error(`cannot peform operation ${operator} using a filter value that is not an array`);
+        }
+        switch(operator){
+            case filterOperators.In:
+                return (filterValue as unknown[]).includes(documentPropValue);
+            case filterOperators.NotIn:
+                return !(filterValue as unknown[]).includes(documentPropValue);
             default:
                 throw new Error(`Unknown query operator '${operator}'`);
         }

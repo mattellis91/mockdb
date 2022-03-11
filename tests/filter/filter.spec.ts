@@ -81,4 +81,14 @@ describe('filter Tests', () => {
         const findResponse = collection.find({prop1: {$lte: 20}});
         expect(findResponse.data.length).to.equal(3);
     });
+
+    it('should return all documents that meet the given filter requirements using $in filter operator', () => {
+        const findResponse = collection.find({prop1: {$in: [10,20] }});
+        expect(findResponse.data.length).equal(3);
+    })
+
+    it('should return all documents that meet the given filter requirements using $nin filter operator', () => {
+        const findResponse = collection.find({prop1: {$nin: [10,20] }});
+        expect(findResponse.data.length).equal(1);
+    })
 })
