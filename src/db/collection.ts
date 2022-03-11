@@ -112,6 +112,14 @@ export class Collection extends DbComponent implements ICollection {
 
     
     public find(filter?:IDocumentFilter): ICollectionResponse {
+        return this.executeFindOperationWithFilter(filter, false);
+    }
+
+    public findOne(filter:IDocumentFilter): ICollectionResponse {
+        return this.executeFindOperationWithFilter(filter, true);
+    }
+
+    private executeFindOperationWithFilter(filter:IDocumentFilter | undefined, findOne:boolean): ICollectionResponse {
         const response:ICollectionResponse = this.getInitialResponse();
         try {
             const collectionContentsRaw = fs.readFileSync(this._collectionPath);
@@ -122,7 +130,7 @@ export class Collection extends DbComponent implements ICollection {
                 response.data = documents;
                 return response;
             } else {
-                response.data = this._filterHelper.findDocumentsByFilter(documentsMap,filter);
+                response.data = this._filterHelper.findDocumentsByFilter(documentsMap,filter, findOne);
                 response.status = Responses.SUCCESS;
                 return response;
             }
@@ -131,6 +139,7 @@ export class Collection extends DbComponent implements ICollection {
             return response;
         }
     }
+
 
     public updateById(id:string, updateFilter:IUpdateDocumentFilter) : ICollectionResponse {
         const response:ICollectionResponse = this.getInitialResponse();

@@ -48,6 +48,13 @@ describe('filter Tests', () => {
         expect(findResponse.data[1].prop2).to.equal('aaa');
     })
 
+    it('should return the first document that meets the given requirements using only literal values', () => {
+        const findOneResponse = collection.findOne({prop1:10, prop2:'aaa'});
+        expect(findOneResponse.data.length).to.equal(1);
+        expect(findOneResponse.data[0].prop1).to.equal(10);
+        expect(findOneResponse.data[0].prop2).to.equal('aaa');
+    });
+
     it('should return all documents that meet the given filter requirements using $eq filter operator', () => {
         const findResponse = collection.find({prop1:10, prop2:{$eq: 'aaa'}})
         expect(findResponse.data.length).to.equal(2);

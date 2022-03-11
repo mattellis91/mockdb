@@ -6,6 +6,7 @@ export interface ICollection {
     insertMany(records:Record<string, unknown>[]): ICollectionResponse
     findById(id:string) : ICollectionResponse
     find(filter?:IDocumentFilter): ICollectionResponse
+    findOne(filter:IDocumentFilter): ICollectionResponse
     updateById(id:string, recordData:Record<string, unknown>) : ICollectionResponse
     count():number
     getName():string
