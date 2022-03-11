@@ -127,6 +127,14 @@ describe('Update tests', () => {
         const replaceResult3 = collection.replaceOne({prop10: {$exists:true}}, {prop10:100}, false);
         expect(collection.count()).to.equal(prevCount);  
 
+    });
+
+    it('should update a document using the $increment operation', () => {
+        const insertRes = collection.insertOne({num1:1});
+        const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$inc: {num1: 2, num2:2}});
+        expect(updateRes.data.length).to.equal(1);
+        expect(updateRes.data[0].num1).to.equal(3);
+        expect(updateRes.data[0].num2).to.equal(2);
     })
 
 });
