@@ -113,4 +113,25 @@ describe('filter Tests', () => {
         const findResponse2 = collection.find({prop3: {$exists: true }});
         expect(findResponse2.data.length).to.equal(2);
     });
+
+    it('should remove the first document that meets the given filter requirements', () => {
+        const prevLength = collection.count();
+        const removeResponse = collection.removeOne({prop1: 10});
+        expect(removeResponse.data.length).to.equal(1);
+        expect(collection.count()).to.equal(prevLength - 1);
+    });
+
+    it('should remove all documents that meet the given filter requirements', () => {
+        const prevLength = collection.count();
+        const removeResponse = collection.remove({prop3: {$exists: true}});
+        expect(removeResponse.data.length).to.equal(2);
+        expect(collection.count()).to.equal(prevLength - 2);
+    })
+
+    it('should not remove any documents if no documents meet the filter requirements', () => {
+        const prevLength = collection.count();
+        const removeResponse = collection.remove({prop1: 200});
+        expect(removeResponse.data.length).to.equal(0);
+        expect(collection.count()).to.equal(prevLength);
+    })
 })

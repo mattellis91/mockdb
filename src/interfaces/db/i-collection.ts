@@ -11,6 +11,8 @@ export interface ICollection {
     updateById(id:string, recordData:Record<string, unknown>) : ICollectionResponse
     updateOne(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter): ICollectionResponse
     update(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter): ICollectionResponse
+    removeOne(filter:IDocumentFilter): ICollectionResponse
+    remove(filter:IDocumentFilter): ICollectionResponse
     count():number
     getName():string
     rename(newName:string):boolean

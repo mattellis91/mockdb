@@ -123,15 +123,20 @@ export class Collection extends DbComponent implements ICollection {
         const response:ICollectionResponse = this.getInitialResponse();
         try {
             const collectionContentsRaw = fs.readFileSync(this._collectionPath);
-            const documentsMap = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
-            if(!filter) {
-                const documents = this.convertMapToArray(documentsMap);
-                response.status = Responses.SUCCESS;
-                response.data = documents;
-                return response;
+            if(collectionContentsRaw) {
+                const documentsMap = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
+                if(!filter) {
+                    const documents = this.convertMapToArray(documentsMap);
+                    response.status = Responses.SUCCESS;
+                    response.data = documents;
+                    return response;
+                } else {
+                    response.data = this._filterHelper.findDocumentsByFilter(documentsMap,filter, findOne);
+                    response.status = Responses.SUCCESS;
+                    return response;
+                }
             } else {
-                response.data = this._filterHelper.findDocumentsByFilter(documentsMap,filter, findOne);
-                response.status = Responses.SUCCESS;
+                response.errors.push(new Error('Error reading contents of collection'));
                 return response;
             }
         } catch (e) {
@@ -188,7 +193,7 @@ export class Collection extends DbComponent implements ICollection {
     private executeUpdateOperationWithFilter(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter, updateOne:boolean) {
         const response:ICollectionResponse = this.getInitialResponse();
         if(!Object.keys(filter).length) {
-            response.errors.push(new Error(`No update filter set for retrieving document`));
+            response.errors.push(new Error(`No filter set for retrieving documents`));
             return response;
         }
         try {
@@ -251,6 +256,43 @@ export class Collection extends DbComponent implements ICollection {
             response.errors.push(new Error('Error reading contents of collection'));
             return response;
         } catch(e) {
+            response.errors.push(e as Error);
+            return response;
+        }
+    }
+
+    public removeOne(filter:IDocumentFilter): ICollectionResponse {
+        return this.executeRemoveOperationWithFilter(filter, true);
+    }
+
+    public remove(filter:IDocumentFilter):ICollectionResponse {
+        return this.executeRemoveOperationWithFilter(filter, false);
+    }
+
+    private executeRemoveOperationWithFilter(filter:IDocumentFilter, removeOne:boolean) {
+        const response:ICollectionResponse = this.getInitialResponse();
+        if(!Object.keys(filter).length) {
+            response.errors.push(new Error(`No filter set for retrieving documents`));
+            return response;
+        }
+        try {
+            const collectionContentsRaw = fs.readFileSync(this._collectionPath);
+            if(collectionContentsRaw) {
+                const collectionContents = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
+                const foundDocuments = this._filterHelper.findDocumentsByFilter(collectionContents,filter, removeOne);
+                response.status = Responses.SUCCESS;
+                for(const doc of foundDocuments) {
+                    delete collectionContents[doc._id as string];
+                }
+                fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                response.data = foundDocuments;
+                this._count -= foundDocuments.length;
+                return response;
+            } else {
+                response.errors.push(new Error('Error reading contents of collection'));
+                return response;
+            }
+        }  catch(e) {
             response.errors.push(e as Error);
             return response;
         }
