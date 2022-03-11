@@ -83,8 +83,50 @@ describe('Update tests', () => {
     it('should unsuccessfully update documents that dont meet the filter requirements', () => {
         const c1 = collection.count();
         const updateResult = collection.update({prop1: {$lt: 1}}, {$set: {prop2: 'less than 1'}, upsert: true});
-        expect(updateResult.data.length).to.equal(0);
-        expect(collection.count()).to.equal(c1);
+        expect(updateResult.data.length).to.equal(1);
+        expect(collection.count()).to.equal(c1 + 1);
+    })
+
+    it('should successfully replace an existing document by id', () => {
+        const insertResult = collection.insertOne({prop1:100, prop2:'aaa'});
+        const replaceResult = collection.replaceById(insertResult.data[0]._id as string, {prop5: null}, true);
+        expect(replaceResult.data.length).to.equal(1);
+
+        let prevCount = collection.count();
+        const replaceResult2 = collection.replaceById(cuid(), {prop5:true}, true);
+        expect(collection.count()).to.equal(prevCount + 1);
+
+        prevCount = collection.count();
+        const replaceResult3 = collection.replaceById(cuid(), {prop6:true}, false);
+        expect(collection.count()).to.equal(prevCount);        
+    });
+
+    it('should successfully replace one document that meets a given filter requirements', () => {
+        const replaceResult = collection.replaceOne({prop5: {$exists:true}},{prop10:-1},true);
+        expect(replaceResult.data.length).to.equal(1);
+
+        let prevCount = collection.count();
+        const replaceResult2 = collection.replaceOne({prop20: {$exists:true}},{prop10:2},true);
+        expect(collection.count()).to.equal(prevCount + 1);
+        
+        prevCount = collection.count();
+        const replaceResult3 = collection.replaceOne({prop20: {$exists:true}}, {prop10:100}, false);
+        expect(collection.count()).to.equal(prevCount);  
+    })
+
+    it('should successfully replace multiple documents that meets a given filter requirements', () => {
+        
+        const replaceResult = collection.replace({prop10: {$exists:true}}, {prop30:'aaaa'},true);
+        expect(replaceResult.data.length).to.equal(2);
+
+        let prevCount = collection.count();
+        const replaceResult2 = collection.replaceOne({prop10: {$exists:true}},{prop20:null},true);
+        expect(collection.count()).to.equal(prevCount + 1);
+        
+        prevCount = collection.count();
+        const replaceResult3 = collection.replaceOne({prop10: {$exists:true}}, {prop10:100}, false);
+        expect(collection.count()).to.equal(prevCount);  
+
     })
 
 });

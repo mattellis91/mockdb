@@ -11,6 +11,9 @@ export interface ICollection {
     updateById(id:string, recordData:Record<string, unknown>) : ICollectionResponse
     updateOne(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter): ICollectionResponse
     update(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter): ICollectionResponse
+    replaceById(id:string, document:Record<string, unknown>, upsert:boolean): ICollectionResponse
+    replaceOne(filter:IDocumentFilter, document:Record<string,unknown>, upsert:boolean): ICollectionResponse
+    replace(filter:IDocumentFilter, document:Record<string,unknown>, upsert:boolean): ICollectionResponse
     removeOne(filter:IDocumentFilter): ICollectionResponse
     remove(filter:IDocumentFilter): ICollectionResponse
     count():number

@@ -190,6 +190,95 @@ export class Collection extends DbComponent implements ICollection {
         return this.executeUpdateOperationWithFilter(filter,updateFilter, false);
     }
 
+    public replaceById(id:string, document:Record<string, unknown>, upsert:boolean): ICollectionResponse {
+        const response:ICollectionResponse = this.getInitialResponse();
+        try {
+            const collectionContentsRaw = fs.readFileSync(this._collectionPath);
+            if(collectionContentsRaw) {
+                const collectionContents = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
+                const foundRecord = collectionContents[id] as Record<string, unknown>;
+                if(foundRecord) {
+                    const newRecord = {_id:foundRecord._id, ...document};
+                    collectionContents[id] = newRecord;
+                    fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                    response.status = Responses.SUCCESS;
+                    response.data = [newRecord];
+                    return response;
+                } else {
+                    if(upsert) {
+                        const newDocument = {_id:id, ...document};
+                        collectionContents[id] = newDocument;
+                        fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                        response.status = Responses.SUCCESS;
+                        response.data = [newDocument];
+                        this._count++;
+                        return response;
+                    }
+                    response.errors.push(new Error(`Could not find it with id '${id}' in collection '${this._collectionName}'`));
+                    return response;
+                }
+            } else {
+                response.errors.push(new Error('Error reading contents of collection'));
+                return response;
+            }
+        } catch (e) {
+            response.errors.push(e as Error);
+            return response;
+        }
+    }
+
+    public replaceOne(filter:IDocumentFilter, document:Record<string,unknown>, upsert:boolean): ICollectionResponse {
+        return this.executeReplaceOperationWithFilter(filter,document,true,upsert);
+    }
+
+    public replace(filter:IDocumentFilter, document:Record<string,unknown>, upsert:boolean): ICollectionResponse {
+        return this.executeReplaceOperationWithFilter(filter,document,false,upsert);
+    }
+
+    private executeReplaceOperationWithFilter(filter:IDocumentFilter, document:Record<string,unknown>, replaceOne:boolean, upsert:boolean) {
+        const response:ICollectionResponse = this.getInitialResponse();
+        if(!Object.keys(filter).length) {
+            response.errors.push(new Error(`No filter set for retrieving documents`));
+            return response;
+        }
+        try {
+            const collectionContentsRaw = fs.readFileSync(this._collectionPath);
+            if(collectionContentsRaw) {
+                const collectionContents = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
+                const foundDocuments = this._filterHelper.findDocumentsByFilter(collectionContents,filter, replaceOne);
+                response.status = Responses.SUCCESS;
+                if(foundDocuments.length) {
+                    const newDocuments = [];
+                    for(const doc of foundDocuments) {
+                        const newDocument = {_id:doc._id, ...document};
+                        collectionContents[newDocument._id as string] = newDocument;
+                        newDocuments.push(newDocument);
+                    }
+                    fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                    response.data = newDocuments;
+                    return response;
+                } else {
+                    if(upsert) {
+                        const newId = cuid();
+                        const newDocument = {_id:newId, ...document};
+                        collectionContents[newId] = newDocument;
+                        fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
+                        response.data = [newDocument];
+                        this._count++;
+                        return response;
+                    }
+                    return response;
+                }
+            } else {
+                response.errors.push(new Error('Error reading contents of collection'));
+                return response;
+            }
+        }  catch(e) {
+            response.errors.push(e as Error);
+            return response;
+        }
+    }
+
     private executeUpdateOperationWithFilter(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter, updateOne:boolean) {
         const response:ICollectionResponse = this.getInitialResponse();
         if(!Object.keys(filter).length) {
@@ -213,7 +302,7 @@ export class Collection extends DbComponent implements ICollection {
                     response.data = newDocuments;
                     return response;
                 } else {
-                    if(updateFilter.upsert && updateOne) {
+                    if(updateFilter.upsert) {
                         const newId = cuid();
                         const newDocument = this._updateHelper.getUpdatedDocument({_id:newId}, updateFilter.$set ?? {});
                         collectionContents[newId] = newDocument;
