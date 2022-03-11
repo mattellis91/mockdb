@@ -58,7 +58,7 @@ export class FilterHelper implements IFilterHelper{
         }
     }
 
-    private evaluateNumericalComparison(documentPropValue: unknown, filterValue:unknown, operator:string): boolean {
+    private evaluateNumericalComparison(documentPropValue: unknown, filterValue:unknown, operator:filterOperators): boolean {
         const documentValueType = typeof(documentPropValue);
         const valueType = typeof(filterValue);
         if(documentValueType === 'object' || valueType === 'object') {

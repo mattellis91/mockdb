@@ -137,4 +137,13 @@ describe('Update tests', () => {
         expect(updateRes.data[0].num2).to.equal(2);
     })
 
+    it('should update a document using the $mul operation', () => {
+        const insertRes = collection.insertOne({num1:0.5, num2:10, num3:3});
+        const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$mul: {num1: 2, num2:0.5, num3:3}});
+        expect(updateRes.data.length).to.equal(1);
+        expect(updateRes.data[0].num1).to.equal(1);
+        expect(updateRes.data[0].num2).to.equal(5);
+        expect(updateRes.data[0].num3).to.equal(9);
+    })
+
 });

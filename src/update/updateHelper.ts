@@ -13,10 +13,11 @@ export class UpdateHelper implements IUpdateHelper {
                     this.manipulateDocmentForSetOperation(newDocument, updateFilter.$set as Record<string, unknown>);
                     break;
                 case UpdateOperators.Increment:
-                    this.manipulateDocumentForIncrementOperation(newDocument, updateFilter.$inc as Record<string, number>);
+                case UpdateOperators.Multiply:
+                    this.manipulateDocumentForNumberOperation(newDocument, updateFilter[operator] as Record<string, number>, operator);
                     break;
                 default:
-                    throw new Error(`Unknown query operator '${operator}'`);
+                    throw new Error(`Unknown update operator '${operator}'`);
             }
         }
         return newDocument;
@@ -28,18 +29,27 @@ export class UpdateHelper implements IUpdateHelper {
         }
     }
 
-    private manipulateDocumentForIncrementOperation(document:Record<string, unknown>, incrementFilter:Record<string,number>) {
+    private manipulateDocumentForNumberOperation(document:Record<string, unknown>, incrementFilter:Record<string,number>, operator:UpdateOperators) {
         for(const prop of Object.keys(incrementFilter)) {
             if(typeof(incrementFilter[prop]) !== 'number'){
-                throw new Error(`Cannot peform increment using filter value ${incrementFilter[prop]}. Value must be a number`);
+                throw new Error(`Cannot peform ${operator} using filter value ${incrementFilter[prop]}. Value must be a number`);
             }
             if(document[prop] !== undefined) {
                 if(document[prop] === null){
-                    throw new Error(`Cannot peform increment using a document value that is null for property '${prop}'`);
+                    throw new Error(`Cannot peform ${operator} using a document value that is null for property '${prop}'`);
                 } else if(typeof(document[prop]) !== 'number') {
-                    throw new Error(`Cannot peform increment using document value '${document[prop]}'. Value must be a number`);
+                    throw new Error(`Cannot peform ${operator} using document value '${document[prop]}'. Value must be a number`);
                 }
-                (document[prop] as number) += incrementFilter[prop];
+                switch(operator){
+                    case UpdateOperators.Increment:
+                        (document[prop] as number) += incrementFilter[prop];
+                        break;
+                    case UpdateOperators.Multiply:
+                        (document[prop] as number) *= incrementFilter[prop];
+                        break;
+                    default:
+                        throw new Error(`Unknown update operator '${operator}'`);
+                }
             } else {
                 document[prop] = incrementFilter[prop];
             }
