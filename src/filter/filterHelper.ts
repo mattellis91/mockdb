@@ -51,6 +51,8 @@ export class FilterHelper implements IFilterHelper{
             case filterOperators.In:
             case filterOperators.NotIn:
                 return this.evaluateArrayIncludes(documentPropValue, queryValue, queryKey);
+            case filterOperators.Exists:
+                return this.evaulateValueExists(documentPropValue, queryValue);
             default:
                 throw new Error(`Unknown query operator '${queryKey}'`);
         }
@@ -88,5 +90,9 @@ export class FilterHelper implements IFilterHelper{
             default:
                 throw new Error(`Unknown query operator '${operator}'`);
         }
+    }
+
+    private evaulateValueExists(documentPropValue: unknown, filterValue:unknown): boolean {
+        return filterValue ? documentPropValue !== undefined : documentPropValue === undefined;
     }
 }

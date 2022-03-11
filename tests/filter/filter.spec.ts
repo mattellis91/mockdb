@@ -98,4 +98,19 @@ describe('filter Tests', () => {
         const findResponse = collection.find({prop1: {$nin: [10,20] }});
         expect(findResponse.data.length).equal(1);
     })
+
+    it('should return all documents that meet the given filter requirements using $exists filter operator', () => {
+        collection.insertMany([
+            {
+                prop3: 'sdfsdf'
+            },
+            {
+                prop3: 'sdfs'
+            },
+        ]);
+        const findResponse = collection.find({prop3: {$exists: false }});
+        expect(findResponse.data.length).to.equal(4);
+        const findResponse2 = collection.find({prop3: {$exists: true }});
+        expect(findResponse2.data.length).to.equal(2);
+    });
 })
