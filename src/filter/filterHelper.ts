@@ -30,6 +30,10 @@ export class FilterHelper implements IFilterHelper{
     private documentPropertyValueEqualsLiteralValue(documentPropValue: unknown, value:unknown): boolean {
         return documentPropValue === value;
     }
+    
+    private documentPropertyValueNotEqualsLiteralValue(documentPropValue: unknown, value:unknown): boolean {
+        return documentPropValue !== value;
+    }
 
     private evaluateFilterQuery(documentPropValue: unknown, query:Record<string, unknown>) : boolean {
         const queryKey = Object.keys(query)[0];
@@ -37,6 +41,8 @@ export class FilterHelper implements IFilterHelper{
         switch(queryKey) {
             case filterOperators.EqualTo:
                 return this.documentPropertyValueEqualsLiteralValue(documentPropValue, queryValue);
+            case filterOperators.NotEqualTo:
+                return this.documentPropertyValueNotEqualsLiteralValue(documentPropValue, queryValue);
             case filterOperators.GreaterThan:
             case filterOperators.GreaterThanOrEqual:
             case filterOperators.LessThan:

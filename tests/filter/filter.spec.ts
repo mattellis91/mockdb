@@ -22,9 +22,10 @@ describe('filter Tests', () => {
 
     it('should return all documents that meet the given filter requirements using only literal values', () => {
         collection = connection.collection('filter-test-collection')
-        const collectionInsertResult = collection.insertMany([{
-            prop1: 10,
-            prop2: 'aaa'
+        const collectionInsertResult = collection.insertMany([
+            {
+                prop1: 10,
+                prop2: 'aaa'
             },
             {
                 prop1: 20,
@@ -54,6 +55,11 @@ describe('filter Tests', () => {
         expect(findResponse.data[0].prop2).to.equal('aaa');
         expect(findResponse.data[1].prop1).to.equal(10);
         expect(findResponse.data[1].prop2).to.equal('aaa');
+    });
+
+    it('should return all documents that meet the given filter requirements using $ne filter operator', () => {
+        const findResponse = collection.find({prop1: {$ne: 10}});
+        expect(findResponse.data.length).to.equal(2);
     });
 
     it('should return all documents that meet the given filter requirements using $gt filter operator', () => {
