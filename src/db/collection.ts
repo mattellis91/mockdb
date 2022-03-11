@@ -153,7 +153,7 @@ export class Collection extends DbComponent implements ICollection {
                 const collectionContents = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
                 const foundRecord = collectionContents[id] as Record<string, unknown>;
                 if(foundRecord) {
-                    const newRecord = this._updateHelper.getUpdatedDocument(foundRecord, updateFilter.$set ?? {});
+                    const newRecord = this._updateHelper.getUpdatedDocument(foundRecord, updateFilter);
                     collectionContents[id] = newRecord;
                     fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
                     response.status = Responses.SUCCESS;
@@ -161,7 +161,7 @@ export class Collection extends DbComponent implements ICollection {
                     return response;
                 } else {
                     if(updateFilter.upsert) {
-                        const newDocument = this._updateHelper.getUpdatedDocument({_id:id}, updateFilter.$set ?? {});
+                        const newDocument = this._updateHelper.getUpdatedDocument({_id:id}, updateFilter);
                         collectionContents[id] = newDocument;
                         fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
                         response.status = Responses.SUCCESS;
@@ -294,7 +294,7 @@ export class Collection extends DbComponent implements ICollection {
                 if(foundDocuments.length) {
                     const newDocuments = [];
                     for(const doc of foundDocuments) {
-                        const newDocument = this._updateHelper.getUpdatedDocument(doc, updateFilter.$set ?? {});
+                        const newDocument = this._updateHelper.getUpdatedDocument(doc, updateFilter);
                         collectionContents[newDocument._id as string] = newDocument;
                         newDocuments.push(newDocument);
                     }
@@ -304,7 +304,7 @@ export class Collection extends DbComponent implements ICollection {
                 } else {
                     if(updateFilter.upsert) {
                         const newId = cuid();
-                        const newDocument = this._updateHelper.getUpdatedDocument({_id:newId}, updateFilter.$set ?? {});
+                        const newDocument = this._updateHelper.getUpdatedDocument({_id:newId}, updateFilter);
                         collectionContents[newId] = newDocument;
                         fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
                         response.data = [newDocument];
