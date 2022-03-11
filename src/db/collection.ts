@@ -140,7 +140,6 @@ export class Collection extends DbComponent implements ICollection {
         }
     }
 
-
     public updateById(id:string, updateFilter:IUpdateDocumentFilter) : ICollectionResponse {
         const response:ICollectionResponse = this.getInitialResponse();
         try {
@@ -162,6 +161,7 @@ export class Collection extends DbComponent implements ICollection {
                         fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
                         response.status = Responses.SUCCESS;
                         response.data = [newDocument];
+                        this._count++;
                         return response;
                     }
                     response.errors.push(new Error(`Could not find it with id '${id}' in collection '${this._collectionName}'`));
@@ -178,6 +178,14 @@ export class Collection extends DbComponent implements ICollection {
     }
 
     public updateOne(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter): ICollectionResponse {
+        return this.executeUpdateOperationWithFilter(filter,updateFilter,true);
+    }
+
+    public update(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter):ICollectionResponse {
+        return this.executeUpdateOperationWithFilter(filter,updateFilter, false);
+    }
+
+    private executeUpdateOperationWithFilter(filter:IDocumentFilter, updateFilter:IUpdateDocumentFilter, updateOne:boolean) {
         const response:ICollectionResponse = this.getInitialResponse();
         if(!Object.keys(filter).length) {
             response.errors.push(new Error(`No update filter set for retrieving document`));
@@ -187,25 +195,28 @@ export class Collection extends DbComponent implements ICollection {
             const collectionContentsRaw = fs.readFileSync(this._collectionPath);
             if(collectionContentsRaw) {
                 const collectionContents = JSON.parse(collectionContentsRaw as unknown as string) as Record<string, Record<string, unknown>>;
-                const foundDocuments = this._filterHelper.findDocumentsByFilter(collectionContents,filter, true);
+                const foundDocuments = this._filterHelper.findDocumentsByFilter(collectionContents,filter, updateOne);
+                response.status = Responses.SUCCESS;
                 if(foundDocuments.length) {
-                    const newDocument = this._updateHelper.getUpdatedDocument(foundDocuments[0], updateFilter.$set ?? {});
-                    collectionContents[newDocument._id as string] = newDocument;
+                    const newDocuments = [];
+                    for(const doc of foundDocuments) {
+                        const newDocument = this._updateHelper.getUpdatedDocument(doc, updateFilter.$set ?? {});
+                        collectionContents[newDocument._id as string] = newDocument;
+                        newDocuments.push(newDocument);
+                    }
                     fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
-                    response.status = Responses.SUCCESS;
-                    response.data = [newDocument];
+                    response.data = newDocuments;
                     return response;
                 } else {
-                    if(updateFilter.upsert) {
+                    if(updateFilter.upsert && updateOne) {
                         const newId = cuid();
                         const newDocument = this._updateHelper.getUpdatedDocument({_id:newId}, updateFilter.$set ?? {});
                         collectionContents[newId] = newDocument;
                         fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
-                        response.status = Responses.SUCCESS;
                         response.data = [newDocument];
+                        this._count++;
                         return response;
                     }
-                    response.errors.push(new Error(`Could not find any documents that meet filter conditions in '${this._collectionName}'`));
                     return response;
                 }
             } else {
