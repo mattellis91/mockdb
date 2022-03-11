@@ -81,10 +81,6 @@ describe('Collection tests', () => {
         expect(collection.count()).to.equal(2);
     });
 
-    it('should return all documents that meet the given filter requirements', () => {
-        collection.find({prop1:10})
-    })
-
     it('should successfully rename the name of the collection', () => {
         const renameResult = collection.rename('test-collection-renamed');
         const newcollectionConnection = connection.collection('test-collection-renamed');  

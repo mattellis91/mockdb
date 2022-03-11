@@ -122,7 +122,8 @@ export class Collection extends DbComponent implements ICollection {
                 response.data = documents;
                 return response;
             } else {
-                console.log(this._filterHelper.findDocumentsByFilter(documentsMap,filter));
+                response.data = this._filterHelper.findDocumentsByFilter(documentsMap,filter);
+                response.status = Responses.SUCCESS;
                 return response;
             }
         } catch (e) {
