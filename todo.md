@@ -1,19 +1,18 @@
-# Example of TODO.md
-
-This is an example of TODO.md
-
-View the raw content of this file to understand the format.
+# MockDb Todo
 
 ### Todo
 
-- [ ] Work on the website ~3d #feat @john 2020-03-20  
-- [ ] Fix the homepage ~1d #bug @jane  
-  - [ ] Sub-task or description  
+- [ ] Move upsert property from update filter to its own update options obj 
+- [ ] Finish Adding update operations
+- [ ] Finish Adding filter operations
 
 ### In Progress
 
-- [ ] Work on Github Repo [JIRA-345]  
-
+- [ ] Adding additional update operations to current list of update operations
+ 
 ### Done ✓
 
-- [x] Create my first TODO.md  
+- [x] Basic CRUD operations for dbs
+- [x] Basic CRUD operations for collections
+- [x] Basic CRUD operations for documents
+- [x] Basic filter comparison operations
