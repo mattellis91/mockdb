@@ -162,6 +162,9 @@ export class Collection extends DbComponent implements ICollection {
                 } else {
                     if(updateFilter.upsert) {
                         const newDocument = this._updateHelper.getUpdatedDocument({_id:id}, updateFilter);
+                        if(updateFilter.$setOnInsert) {
+                            this._updateHelper.manipulateDocumentOnInsert(newDocument, updateFilter.$setOnInsert);
+                        }
                         collectionContents[id] = newDocument;
                         fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
                         response.status = Responses.SUCCESS;
@@ -305,6 +308,9 @@ export class Collection extends DbComponent implements ICollection {
                     if(updateFilter.upsert) {
                         const newId = cuid();
                         const newDocument = this._updateHelper.getUpdatedDocument({_id:newId}, updateFilter);
+                        if(updateFilter.$setOnInsert) {
+                            this._updateHelper.manipulateDocumentOnInsert(newDocument, updateFilter.$setOnInsert);
+                        }
                         collectionContents[newId] = newDocument;
                         fs.writeFileSync(this._collectionPath, JSON.stringify(collectionContents));
                         response.data = [newDocument];

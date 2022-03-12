@@ -182,4 +182,15 @@ describe('Update tests', () => {
         expect(updateRes.data[0].name).to.equal('Gon');
     })
 
+    it('should set additional properties on upsert using $setOnInsert operation', () => {
+        const updateRes = collection.updateOne({_id: 'aaa'},{$set: {p1:1}, $setOnInsert: {p2:2}, upsert:true});
+        expect(updateRes.data.length).to.equal(1);
+        expect(updateRes.data[0].p1).to.exist;
+        expect(updateRes.data[0].p2).to.exist;
+        const updateRes2 = collection.updateOne({_id: updateRes.data[0]._id},{$set: {p3:3}, $setOnInsert: {p4:4}, upsert:true});
+        expect(updateRes2.data.length).to.equal(1);
+        expect(updateRes2.data[0].p3).to.exist;
+        expect(updateRes2.data[0].p4).to.not.exist;
+    });
+
 });

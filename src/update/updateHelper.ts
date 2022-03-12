@@ -5,7 +5,8 @@ import { UpdateOperators } from "./updateOperators";
 export class UpdateHelper implements IUpdateHelper {
 
     public getUpdatedDocument(originalDocument:Record<string, unknown>, updateFilter:IUpdateDocumentFilter) {
-        const updateOperators = Object.keys(updateFilter).filter((key) => key.startsWith('$'));
+        const ignoreOperators = ['upsert','$setOnInsert'];
+        const updateOperators = Object.keys(updateFilter).filter((key) => !ignoreOperators.includes(key));
         const newDocument = cloneDeep(originalDocument);
         for(const operator of updateOperators) {
             switch(operator) {
@@ -104,5 +105,11 @@ export class UpdateHelper implements IUpdateHelper {
                 delete document[prop];
             }
         }       
+    }
+
+    public manipulateDocumentOnInsert(document:Record<string, unknown>, setOnInsertFilter:Record<string, unknown>): void {
+        for(const prop of Object.keys(setOnInsertFilter)) {
+            document[prop] = setOnInsertFilter[prop];
+        }
     }
 }
