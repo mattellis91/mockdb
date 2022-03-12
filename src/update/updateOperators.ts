@@ -5,5 +5,7 @@ export enum UpdateOperators {
     AddToSet = '$addToSet',
     Pop = '$pop',
     Push = '$push',
-    PushAll = '$pushAll'
+    PushAll = '$pushAll',
+    Min = '$min',
+    Max = '$max'
 }

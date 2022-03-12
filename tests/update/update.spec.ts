@@ -146,4 +146,20 @@ describe('Update tests', () => {
         expect(updateRes.data[0].num3).to.equal(9);
     })
 
+    it('should update a document using the $min operation', () => {
+        const insertRes = collection.insertOne({highScore:800, lowScore: 200});
+        const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$min: {lowScore:150, highScore:950}});
+        expect(updateRes.data.length).to.equal(1);
+        expect(updateRes.data[0].lowScore).to.equal(150);
+        expect(updateRes.data[0].highScore).to.equal(800);
+    });
+
+    it('should update a document using the $min operation', () => {
+        const insertRes = collection.insertOne({highScore:800, lowScore: 200});
+        const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$max: {lowScore:150, highScore:950}});
+        expect(updateRes.data.length).to.equal(1);
+        expect(updateRes.data[0].lowScore).to.equal(200);
+        expect(updateRes.data[0].highScore).to.equal(950);        
+    });
+
 });
