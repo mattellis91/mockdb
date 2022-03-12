@@ -20,7 +20,7 @@ describe('filter Tests', () => {
         }
     });
 
-    it('should return all documents that meet the given filter requirements using only literal values', () => {
+    it('should return all documents when passing in an empty filter', () => {
         collection = connection.collection('filter-test-collection')
         const collectionInsertResult = collection.insertMany([
             {
@@ -40,6 +40,11 @@ describe('filter Tests', () => {
                 prop2: 'aaa'
             },
         ]);
+        const findResponse = collection.find({});
+        expect(findResponse.data.length).to.equal(4);
+    })
+
+    it('should return all documents that meet the given filter requirements using only literal values', () => {
         const findResponse = collection.find({prop1:10, prop2:'aaa'});
         expect(findResponse.data.length).to.equal(2);
         expect(findResponse.data[0].prop1).to.equal(10);
