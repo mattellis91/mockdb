@@ -162,4 +162,24 @@ describe('Update tests', () => {
         expect(updateRes.data[0].highScore).to.equal(950);        
     });
 
+    it('should update a document using the $unset operation', () => {
+        const insertRes = collection.insertOne({p1:1, p2:2, p3:3});
+        const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$unset: {p2:"", p3:""}});
+        expect(updateRes.data.length).to.equal(1);
+        expect(Object.keys(updateRes.data[0]).length).to.equal(2);
+        expect(updateRes.data[0].p1).to.exist;
+        expect(updateRes.data[0].p2).to.not.exist;
+        expect(updateRes.data[0].p3).to.not.exist;
+    })
+
+    it('should update a document using the $rename operation', () => {
+        const insertRes = collection.insertOne({nmae:'Gon',age:12});
+        const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$rename: {"nmae": "name"}});
+        expect(updateRes.data.length).to.equal(1);
+        expect(Object.keys(updateRes.data[0]).length).to.equal(3);
+        expect(updateRes.data[0].nmae).to.not.exist;
+        expect(updateRes.data[0].name).to.exist;
+        expect(updateRes.data[0].name).to.equal('Gon');
+    })
+
 });

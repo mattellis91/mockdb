@@ -20,6 +20,12 @@ export class UpdateHelper implements IUpdateHelper {
                 case UpdateOperators.Max:
                     this.manipulateDocumentForMinMaxOperation(newDocument, updateFilter[operator] as Record<string, number>, operator);
                     break;
+                case UpdateOperators.Unset:
+                    this.manipulateDocumentForUnsetOperation(newDocument, updateFilter.$unset as Record<string, string>);
+                    break;
+                case UpdateOperators.Rename:
+                    this.manipulateDocumentForRenameOperation(newDocument, updateFilter.$rename as Record<string, string>);
+                    break;
                 default:
                     throw new Error(`Unknown update operator '${operator}'`);
             }
@@ -35,9 +41,6 @@ export class UpdateHelper implements IUpdateHelper {
 
     private manipulateDocumentForNumberOperation(document:Record<string, unknown>, incrementFilter:Record<string,number>, operator:UpdateOperators) {
         for(const prop of Object.keys(incrementFilter)) {
-            if(typeof(incrementFilter[prop]) !== 'number'){
-                throw new Error(`Cannot peform ${operator} using filter value ${incrementFilter[prop]}. Value must be a number`);
-            }
             if(document[prop] !== undefined) {
                 if(document[prop] === null){
                     throw new Error(`Cannot peform ${operator} using a document value that is null for property '${prop}'`);
@@ -62,9 +65,6 @@ export class UpdateHelper implements IUpdateHelper {
 
     private manipulateDocumentForMinMaxOperation(document:Record<string,unknown>, minMaxFilter:Record<string,number>, operator:UpdateOperators) {
         for(const prop of Object.keys(minMaxFilter)) {
-            if(typeof(minMaxFilter[prop]) !== 'number'){
-                throw new Error(`Cannot peform ${operator} using filter value ${minMaxFilter[prop]}. Value must be a number`);
-            }
             if(document[prop] !== undefined) {
                 if(typeof(document[prop]) !== 'number' && document[prop] !== null) {
                     throw new Error(`Cannot peform ${operator} using document value '${document[prop]}'. Value must be a number or null`);
@@ -87,5 +87,22 @@ export class UpdateHelper implements IUpdateHelper {
                 document[prop] = minMaxFilter[prop];
             }
         }
+    }
+
+    private manipulateDocumentForUnsetOperation(document:Record<string, unknown>, unsetFilter:Record<string,string>) {
+        for(const prop of Object.keys(unsetFilter)) {
+            if(document[prop] !== undefined) {
+                delete document[prop];
+            }
+        }
+    }
+
+    private manipulateDocumentForRenameOperation(document:Record<string,unknown>, renameFilter:Record<string,string>) {
+        for(const prop of Object.keys(renameFilter)){
+            if(document[prop] !== undefined) {
+                document[renameFilter[prop]] = document[prop];
+                delete document[prop];
+            }
+        }       
     }
 }

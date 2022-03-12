@@ -4,6 +4,8 @@ export interface IUpdateDocumentFilter {
     $mul?: Record<string, number>
     $min?: Record<string, number>
     $max?: Record<string, number>
+    $unset?: Record<string, string>
+    $rename?: Record<string, string>
     $addFields? : Record<string , unknown>
     upsert? : boolean
 }

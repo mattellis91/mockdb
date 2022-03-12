@@ -7,5 +7,7 @@ export enum UpdateOperators {
     Push = '$push',
     PushAll = '$pushAll',
     Min = '$min',
-    Max = '$max'
+    Max = '$max',
+    Unset = '$unset',
+    Rename = '$rename'
 }
