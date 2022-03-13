@@ -193,4 +193,12 @@ describe('Update tests', () => {
         expect(updateRes2.data[0].p4).to.not.exist;
     });
 
+    it('should update a document using the $addToset operation', () => {
+        const insertRes = collection.insertOne({colors:['red','blue','green'], shapes:['square','triangle']});
+        const updateRes = collection.updateOne({_id:insertRes.data[0]._id},{$addToSet: {colors: 'yellow', shapes: 'square'}});
+        expect(updateRes.data.length).to.equal(1);
+        expect((updateRes.data[0].colors as string[]).length).to.equal(4);
+        expect((updateRes.data[0].shapes as string[]).length).to.equal(2);
+    })
+
 });

@@ -8,5 +8,6 @@ export interface IUpdateDocumentFilter {
     $rename?: Record<string, string>
     $addFields? : Record<string , unknown>
     $setOnInsert?: Record<string, unknown>
+    $addToSet?: Record<string, unknown>
     upsert? : boolean
 }

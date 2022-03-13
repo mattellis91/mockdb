@@ -27,6 +27,9 @@ export class UpdateHelper implements IUpdateHelper {
                 case UpdateOperators.Rename:
                     this.manipulateDocumentForRenameOperation(newDocument, updateFilter.$rename as Record<string, string>);
                     break;
+                case UpdateOperators.AddToSet:
+                    this.maniputateDocumentForAddToSetOperation(newDocument, updateFilter.$addToSet as Record<string, unknown>);
+                    break;
                 default:
                     throw new Error(`Unknown update operator '${operator}'`);
             }
@@ -110,6 +113,17 @@ export class UpdateHelper implements IUpdateHelper {
     public manipulateDocumentOnInsert(document:Record<string, unknown>, setOnInsertFilter:Record<string, unknown>): void {
         for(const prop of Object.keys(setOnInsertFilter)) {
             document[prop] = setOnInsertFilter[prop];
+        }
+    }
+
+    private maniputateDocumentForAddToSetOperation(document:Record<string,unknown>, addToSetFilter:Record<string,unknown>) : void {
+        for(const prop of Object.keys(addToSetFilter)) {
+            if(!Array.isArray(document[prop])) {
+                throw new Error(`Cannot peform $addToSet using document value '${document[prop]}'. Value must be an array`);
+            }
+            if(!(document[prop] as unknown[]).includes(addToSetFilter[prop])) {
+                (document[prop] as unknown[]).push(addToSetFilter[prop]);
+            }
         }
     }
 }
