@@ -30,6 +30,9 @@ export class UpdateHelper implements IUpdateHelper {
                 case UpdateOperators.AddToSet:
                     this.maniputateDocumentForAddToSetOperation(newDocument, updateFilter.$addToSet as Record<string, unknown>);
                     break;
+                case UpdateOperators.Pop:
+                    this.manipulateDocumentForPopOperation(newDocument, updateFilter.$pop as Record<string, -1 | 1>);
+                    break;
                 default:
                     throw new Error(`Unknown update operator '${operator}'`);
             }
@@ -124,6 +127,15 @@ export class UpdateHelper implements IUpdateHelper {
             if(!(document[prop] as unknown[]).includes(addToSetFilter[prop])) {
                 (document[prop] as unknown[]).push(addToSetFilter[prop]);
             }
+        }
+    }
+
+    private manipulateDocumentForPopOperation(document:Record<string, unknown>, popFilter:Record<string, -1 | 1>) : void {
+        for(const prop of Object.keys(popFilter)) {
+            if(!Array.isArray(document[prop])) {
+                throw new Error(`Cannot peform $pop using document value '${document[prop]}'. Value must be an array`);
+            }
+            popFilter[prop] === -1 ? (document[prop] as unknown[]).shift() : (document[prop] as unknown[]).pop();  
         }
     }
 }

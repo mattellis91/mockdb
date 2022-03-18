@@ -201,4 +201,16 @@ describe('Update tests', () => {
         expect((updateRes.data[0].shapes as string[]).length).to.equal(2);
     })
 
+    it('should update a document using the $pop operation', () => {
+        const insertRes = collection.insertOne({colors:['red','blue','green'], shapes:['square','triangle','circle']});
+        const updateRes = collection.update({_id:insertRes.data[0]._id},{$pop:{colors:1, shapes:-1}});
+        expect(updateRes.data.length).to.equal(1);
+        expect((updateRes.data[0].colors as string[]).length).to.equal(2);
+        expect((updateRes.data[0].colors as string[])[0] as string).to.equal('red');
+        expect((updateRes.data[0].colors as string[])[1] as string).to.equal('blue');
+        expect((updateRes.data[0].shapes as string[]).length).to.equal(2);
+        expect((updateRes.data[0].shapes as string[])[0] as string).to.equal('triangle');
+        expect((updateRes.data[0].shapes as string[])[1] as string).to.equal('circle');
+    })
+
 });
