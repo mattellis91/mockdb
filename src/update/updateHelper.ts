@@ -138,4 +138,13 @@ export class UpdateHelper implements IUpdateHelper {
             popFilter[prop] === -1 ? (document[prop] as unknown[]).shift() : (document[prop] as unknown[]).pop();  
         }
     }
+
+    private manipulateDocumentForPushOperation(document:Record<string, unknown>, pushFilter:Record<string, unknown>) : void {
+        for(const prop of Object.keys(pushFilter)) {
+            if(!Array.isArray(document[prop])) {
+                throw new Error(`Cannot peform $push using document value '${document[prop]}'. Value must be an array`);
+            }
+            (document[prop] as unknown[]).push(pushFilter[prop]);
+        }
+    }
 }
