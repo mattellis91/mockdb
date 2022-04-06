@@ -10,5 +10,6 @@ export interface IUpdateDocumentFilter {
     $setOnInsert?: Record<string, unknown>
     $addToSet?: Record<string, unknown>
     $pop?: Record<string, -1 | 1>
+    $push?: Record<string, unknown>
     upsert? : boolean
 }

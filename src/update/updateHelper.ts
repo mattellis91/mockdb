@@ -33,6 +33,9 @@ export class UpdateHelper implements IUpdateHelper {
                 case UpdateOperators.Pop:
                     this.manipulateDocumentForPopOperation(newDocument, updateFilter.$pop as Record<string, -1 | 1>);
                     break;
+                case UpdateOperators.Push:
+                    this.manipulateDocumentForPushOperation(newDocument, updateFilter.$push as Record<string, unknown>);
+                    break;
                 default:
                     throw new Error(`Unknown update operator '${operator}'`);
             }
