@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash";
+import { cloneDeep, includes } from "lodash";
 import { IUpdateDocumentFilter, IUpdateHelper } from "../interfaces";
 import { UpdateOperators } from "./updateOperators";
 
@@ -35,6 +35,9 @@ export class UpdateHelper implements IUpdateHelper {
                     break;
                 case UpdateOperators.Push:
                     this.manipulateDocumentForPushOperation(newDocument, updateFilter.$push as Record<string, unknown>);
+                    break;
+                case UpdateOperators.PullAll:
+                    this.manipulateDocumentForPullAllOperation(newDocument, updateFilter.$pullAll as Record<string, unknown[]>);
                     break;
                 default:
                     throw new Error(`Unknown update operator '${operator}'`);
@@ -148,6 +151,20 @@ export class UpdateHelper implements IUpdateHelper {
                 throw new Error(`Cannot peform $push using document value '${document[prop]}'. Value must be an array`);
             }
             (document[prop] as unknown[]).push(pushFilter[prop]);
+        }
+    }
+
+    private manipulateDocumentForPullAllOperation(document:Record<string,unknown>, pullAllFilter:Record<string, unknown[]>) : void {
+        for(const prop of Object.keys(pullAllFilter)) {
+            if(!Array.isArray(document[prop])) {
+                throw new Error(`Cannot peform $push using document value '${document[prop]}'. Value must be an array`);
+            }
+            let i = (document[prop] as unknown[]).length;
+            while(i--) {
+               if((pullAllFilter[prop] as unknown[]).includes((document[prop] as unknown[])[i])) {
+                   (document[prop] as unknown[]).splice(i,1);
+               } 
+            }
         }
     }
 }

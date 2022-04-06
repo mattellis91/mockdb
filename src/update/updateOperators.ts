@@ -10,5 +10,6 @@ export enum UpdateOperators {
     Max = '$max',
     Unset = '$unset',
     Rename = '$rename',
-    SetOnInsert = '$setOnInsert'
+    SetOnInsert = '$setOnInsert',
+    PullAll = '$pullAll'
 }

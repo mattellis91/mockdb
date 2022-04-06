@@ -223,4 +223,13 @@ describe('Update tests', () => {
         expect((updateRes.data[0].shapes as string[])[3]).to.equal('rectangle');
     })
 
+    it('should update a document using the $pullAll operation', () => {
+        const insertRes = collection.insertOne({scores: [0,2,5,5,1,0]});
+        const updateRes = collection.update({_id:insertRes.data[0]._id}, {$pullAll:{scores: [0,5]}});
+        expect(updateRes.data.length).to.equal(1);
+        expect((updateRes.data[0].scores as number[]).length).to.equal(2);
+        expect((updateRes.data[0].scores as number[])[0]).to.equal(2);
+        expect((updateRes.data[0].scores as number[])[1]).to.equal(1);
+    })
+
 });
