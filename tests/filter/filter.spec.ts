@@ -119,6 +119,33 @@ describe('filter Tests', () => {
         expect(findResponse2.data.length).to.equal(2);
     });
 
+    
+    it('should return all documents that meet the given filter requirements using $text filter operator', () => {
+        collection.insertMany([
+            {
+                prop3: 'Coffee Shopping'
+            },
+            {
+                prop3: 'coffee and cream'
+            },
+            {
+                prop3: 'coffee'
+            },
+            {
+                prop3: 'Baking a cake'
+            },
+            {
+                prop3: 'baking'
+            }
+        ])
+        const findResponse = collection.find({prop3: {$contains: {$terms:['coffee']}}});
+        expect(findResponse.data.length).to.equal(3);
+        const findResponse2 = collection.find({prop3: {$contains: {$terms:['coffee'], $caseSensitive:true}}});
+        expect(findResponse2.data.length).to.equal(2);
+        const findResponse3 = collection.find({prop3: {$contains: {$terms:['bake','coffee','cake']}}});
+        expect(findResponse3.data.length).to.equal(4);
+    })
+
     it('should remove the first document that meets the given filter requirements', () => {
         const prevLength = collection.count();
         const removeResponse = collection.removeOne({prop1: 10});
@@ -129,8 +156,8 @@ describe('filter Tests', () => {
     it('should remove all documents that meet the given filter requirements', () => {
         const prevLength = collection.count();
         const removeResponse = collection.remove({prop3: {$exists: true}});
-        expect(removeResponse.data.length).to.equal(2);
-        expect(collection.count()).to.equal(prevLength - 2);
+        expect(removeResponse.data.length).to.equal(7);
+        expect(collection.count()).to.equal(prevLength - 7);
     })
 
     it('should not remove any documents if no documents meet the filter requirements', () => {
@@ -139,4 +166,5 @@ describe('filter Tests', () => {
         expect(removeResponse.data.length).to.equal(0);
         expect(collection.count()).to.equal(prevLength);
     })
+
 })

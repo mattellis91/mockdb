@@ -24,5 +24,8 @@ export enum filterOperators {
     //ARRAY OPERATORS
     All = '$all',
     elemMatch = '$elemMatch',
-    Size = '$size'
+    Size = '$size',
+
+    //EVALUATION OPERATORS
+    Contains = '$contains'    
 }

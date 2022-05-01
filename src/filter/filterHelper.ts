@@ -53,6 +53,8 @@ export class FilterHelper implements IFilterHelper{
                 return this.evaluateArrayIncludes(documentPropValue, queryValue, queryKey);
             case filterOperators.Exists:
                 return this.evaulateValueExists(documentPropValue, queryValue);
+            case filterOperators.Contains:
+                return this.evaluateContains(documentPropValue, queryValue as Record<string, unknown>);
             default:
                 throw new Error(`Unknown query operator '${queryKey}'`);
         }
@@ -94,5 +96,23 @@ export class FilterHelper implements IFilterHelper{
 
     private evaulateValueExists(documentPropValue: unknown, filterValue:unknown): boolean {
         return filterValue ? documentPropValue !== undefined : documentPropValue === undefined;
+    }
+
+    private evaluateContains(documentPropValue: unknown, contains:Record<string, unknown>): boolean {
+        if(([null,undefined] as unknown[]).includes(documentPropValue)){ return false; }
+        if(typeof(documentPropValue) !== 'string'){
+            throw new Error(`cannot peform operation $contains against values that are not of type string`);
+        }
+        let searchTerms = contains.$terms as string[];
+        if(!contains.$caseSensitive) {
+            searchTerms = searchTerms.map((term) => term.toLowerCase());
+            documentPropValue = (documentPropValue as string).toLowerCase();
+        }
+        for(const term of searchTerms) {
+            if((documentPropValue as string).includes(term)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
