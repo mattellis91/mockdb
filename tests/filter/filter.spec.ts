@@ -146,6 +146,66 @@ describe('filter Tests', () => {
         expect(findResponse3.data.length).to.equal(4);
     })
 
+
+    it('should only return documents that meet all the given filter requirements using the $and operator', () => {
+        const findResponse = collection.find({
+            $and: [
+                { prop1: {$lte: 30} },
+                { prop2: 'aaa'}
+            ],
+            prop1: 10
+        });
+        expect(findResponse.data.length).to.equal(2);
+        const findResponse2 = collection.find({
+            $and: [
+                { prop1: {$lte: 30} },
+                {$and: [{ prop2: 'aaa'}]}
+            ],
+            prop1: 10
+        });
+        expect(findResponse2.data.length).to.equal(2);
+    });
+
+    it('should only return documents that meet all the given requirements using the $or operator', () => {
+        const findResponse = collection.find({
+            $or: [
+                { prop1: {$lte: 10} },
+                { prop2: 'aba'}
+            ]
+        });
+        expect(findResponse.data.length).to.equal(3);
+        const findResponse2 = collection.find({
+            $or: [
+                { prop1: {$lte: 10}},
+                {$or: [ {prop2: 'aba'} ]}
+            ]
+        });
+        expect(findResponse.data.length).to.equal(3);
+    });
+
+    it('should only return documents that meet all the given requirements using a combination of $and and $or', () => {
+        const findResponse = collection.find({
+            $and: [
+                { prop1: {$lte: 30} },
+                {$or: [{ prop2: 'aaa'}, {prop2: 'aba', prop1: 20}]}
+            ],
+        });
+        expect(findResponse.data.length).to.equal(4);
+        const findResponse2 = collection.find({
+            $or: [
+                { $and: [ {prop1: 20}, {prop2: 'aba'} ]},
+                { prop1: {$lte: 10}}
+            ]
+        });
+        expect(findResponse2.data.length).to.equal(3);
+
+        const findResponse3 = collection.find({
+            $and: [{prop1: {$gt:10}}, {prop1: {$lte: 30}}],
+            $or: [{prop1: {$gt: 30}}, {prop1: 20}]
+        });
+        expect(findResponse3.data.length).to.equal(1);
+    })
+
     it('should remove the first document that meets the given filter requirements', () => {
         const prevLength = collection.count();
         const removeResponse = collection.removeOne({prop1: 10});

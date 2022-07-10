@@ -9,7 +9,28 @@ export class FilterHelper implements IFilterHelper{
         for(const documentKey of Object.keys(documentsMap)) {
             let passes = true;
             for(const filterKey of Object.keys(filterDocumentFilter)) {
-                if(isObject(filterDocumentFilter[filterKey])) {
+
+                if(filterKey === filterOperators.And) {
+                    andLoop: for(const documentFilter of filterDocumentFilter[filterKey] as IDocumentFilter[]) {
+                        if(this.findDocumentsByFilter(documentsMap, documentFilter).find((doc) => documentKey === doc._id) === undefined) {
+                            passes = false;
+                            break andLoop;
+                        }
+                    }
+                }
+
+                else if(filterKey === filterOperators.Or) {
+                    let orPasses = false;
+                    orLoop: for(const documentFilter of filterDocumentFilter[filterKey] as IDocumentFilter[]) {
+                        if(this.findDocumentsByFilter(documentsMap, documentFilter).find((doc) => documentKey === doc._id) !== undefined) {
+                            orPasses = true;
+                            break orLoop;
+                        }
+                    }
+                    passes = orPasses; 
+                }
+
+                else if(isObject(filterDocumentFilter[filterKey])) {
                     if(!this.evaluateFilterQuery(documentsMap[documentKey][filterKey], filterDocumentFilter[filterKey] as Record<string, unknown>)) {
                         passes = false;
                     }

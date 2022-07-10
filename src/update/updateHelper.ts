@@ -71,6 +71,7 @@ export class UpdateHelper implements IUpdateHelper {
                         throw new Error(`Unknown update operator '${operator}'`);
                 }
             } else {
+                //TODO: why am i doing this if undefined????
                 document[prop] = incrementFilter[prop];
             }
         }
@@ -97,6 +98,7 @@ export class UpdateHelper implements IUpdateHelper {
                         throw new Error(`Unknown update operator '${operator}'`);
                 }      
             } else {
+                //TODO: why am i doing this if undefined????
                 document[prop] = minMaxFilter[prop];
             }
         }
