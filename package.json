@@ -1,9 +1,10 @@
 {
-  "name": "mockdb",
-  "version": "1.0.0",
-  "description": "Simple database system for handling mock data",
+  "name": "@mattellis91/mockdb",
+  "version": "0.0.1",
+  "description": "Simple local database system for handling mock data.",
   "main": "index.js",
   "scripts": {
+    "publish": "np",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts --timeout 10000"
   },
   "repository": {
@@ -11,7 +12,7 @@
     "url": "git+https://github.com/mattellis91/mockdb.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mattellis91/mockdb/issues"
   },
@@ -23,6 +24,7 @@
     "@types/node": "^15.6.0",
     "chai": "^4.3.4",
     "mocha": "^8.4.0",
+    "np": "^7.6.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   },
