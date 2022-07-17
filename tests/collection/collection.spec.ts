@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { expect } from "chai";
 import { Db, MockDb, Responses, Collection } from '../../src';
+import cuid from 'cuid';
 const fsPromises = fs.promises;
 
 describe('Collection tests', () => {
@@ -27,10 +28,12 @@ describe('Collection tests', () => {
 
     it('should sucessfully insert a new document into an existing collection', () => {
         const collectionInsertResult = collection.insertOne({
+            _id: 'cjld2cjxh0000qzrmn831i7rn',
             prop1: 'value1',
             prop2: 'value2'
         });
         expect(collectionInsertResult.status).to.equal(Responses.SUCCESS);
+        expect(collectionInsertResult.data[0]._id).to.equal('cjld2cjxh0000qzrmn831i7rn');
     });
 
     it('should sucessfully retrieve a document from a collection when supplying a valid id', () => {

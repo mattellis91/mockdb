@@ -38,7 +38,8 @@ export class Collection extends DbComponent implements ICollection {
     }
     
     public insertOne(record:Record<string, unknown>): ICollectionResponse {
-        const recordToInsert = {_id:cuid(), ...record}
+        const id = record._id ? record._id as string : cuid();
+        const recordToInsert = {_id:id, ...record}
         const response:ICollectionResponse = this.getInitialResponse();
         try {
             const collectionContentsRaw = fs.readFileSync(this._collectionPath);
@@ -61,7 +62,10 @@ export class Collection extends DbComponent implements ICollection {
     }
 
     public insertMany(records:Record<string, unknown>[]): ICollectionResponse {
-        const recordsToInsert = records.map((record) => {return {_id:cuid(), ...record}});
+        const recordsToInsert = records.map((record) => {
+            const id = record._id ? record._id as string : cuid();
+            return {_id:id, ...record}
+        });
         const response:ICollectionResponse = this.getInitialResponse();
         try {
             const collectionContentsRaw = fs.readFileSync(this._collectionPath);

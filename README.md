@@ -1,4 +1,4 @@
-# Mockdb 
+# Mockdb
 > Create and manage local mock document orientated databases using mongodb like filters.
 
 ## Table of Contents
@@ -27,11 +27,11 @@ project
 ```javascript
 import { Mockdb } from 'mockdb';
 
-//create new db connection and connection
-const connection = MockDb.createDb('testDb');
+//connect to an existing database. If the database does not exist. it will be created and a connection to it will be returned
+const connection = MockDb.connect('testDb');
 
-//connect to an existing database
-//const connection = MockDb.connect('existingDb');
+//create new db without connecting
+//const connection = MockDb.createDb('testDb');
 
 //remove an existing db
 //await MockDb.removeDb('existingDb')
@@ -149,6 +149,11 @@ collection.updateOne({foo: {$gt: 1000} }, {$set : {bar : true }, upsert: true })
 ## Contact
 Created by [Matt Ellis](https://github.com/mattellis91) - feel free to contact me!
 
+<div style="display: flex; margin-left:1rem;">
+<a href="https://au.linkedin.com/in/matt-ellis-8063b011a"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="linkedin" style="display:inline;"/></a>
+
+<a href="https://github.com/mattellis91"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="github" style="display:inline;"  /></a>
+</div>
 
 ## License 
 This project is open source and available under the [MIT License](https://opensource.org/licenses/MIT). 
