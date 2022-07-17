@@ -1,16 +1,16 @@
 # Mockdb
-> Create and manage local mock document orientated databases using mongodb like filters.
+Create and manage local mock document orientated databases using mongodb like filters.
 
 ## Table of Contents
   - [Database](#database)
-  - [Collections](#collection)
+  - [Collections](#collections)
   - [Filter](#filter)
   - [Update](#update)
   - [Contact](#contact)
   - [License](#license)
 
 
-## Database
+## Database [🔝](#mockdb)
 
 Create a new database , connect to an existing database or remove an existing database with the MockDb static methods 
 
@@ -38,7 +38,7 @@ const connection = MockDb.connect('testDb');
 
 ```
 
-## Collections
+## Collections [🔝](#mockdb)
 
 Manage collections of documents. Collections are represented as json files inside the relevant database subdirectory.
 
@@ -93,7 +93,7 @@ collection.count();
 connection.dropCollection('testCollection');
 ```
 
-## Filter
+## Filter [🔝](#mockdb)
 Filter documents using mongodb like query operators
 ```javascript
 
@@ -128,7 +128,7 @@ collection.remove({bar: true});
 collection.removeOne({bar: false});
 ```
 
-## Update
+## Update [🔝](#mockdb)
 Update documents using mongodb like update operators
 
 ```javascript
