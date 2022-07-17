@@ -2,12 +2,12 @@
 Create and manage local mock document orientated databases using mongodb like filters.
 
 ## Table of Contents
-  - [Database](#database)
-  - [Collections](#collections)
-  - [Filter](#filter)
-  - [Update](#update)
-  - [Contact](#contact)
-  - [License](#license)
+  - [Database](#Database)
+  - [Collections](#Collections)
+  - [Filter](#Filter)
+  - [Update](#Update)
+  - [Contact](#Contact)
+  - [License](#License)
 
 
 ## Database [🔝](#mockdb)
@@ -27,7 +27,8 @@ project
 ```javascript
 import { Mockdb } from 'mockdb';
 
-//connect to an existing database. If the database does not exist. it will be created and a connection to it will be returned
+//connect to an existing database. If the database does not exist. 
+//It will be created and a connection to it will be returned
 const connection = MockDb.connect('testDb');
 
 //create new db without connecting
