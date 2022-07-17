@@ -2,9 +2,9 @@
   "name": "@mattellis91/mockdb",
   "version": "0.0.2",
   "description": "Simple local database system for handling mock data.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "publish": "np",
+    "release": "npm run build && np --no-tests",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts --timeout 10000"
   },
   "repository": {
