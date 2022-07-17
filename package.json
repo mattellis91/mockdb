@@ -1,6 +1,6 @@
 {
   "name": "@mattellis91/mockdb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simple local database system for handling mock data.",
   "main": "index.js",
   "scripts": {
