@@ -1,6 +1,11 @@
 # Mockdb
 Create and manage local mock document orientated databases using mongodb like filters.
 
+## Install
+```javascript
+npm i @mattellis91/mockdb
+```
+
 ## Table of Contents
   - [Database](#Database)
   - [Collections](#Collections)
@@ -25,7 +30,7 @@ project
 ```
 
 ```javascript
-import { Mockdb } from 'mockdb';
+import { MockDb } from '@mattellis91/mockdb';
 
 //connect to an existing database. If the database does not exist. 
 //It will be created and a connection to it will be returned
