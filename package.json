@@ -4,6 +4,7 @@
   "description": "Simple local database system for handling mock data.",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "release": "npm run build && np --no-tests",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts --timeout 10000"
   },
