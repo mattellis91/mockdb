@@ -1,5 +1,5 @@
 # Mockdb
-Create and manage local mock document orientated databases using mongodb like filters.
+Create and manage mock document orientated databases using mongodb like filters.
 
 ## Install
 ```javascript
