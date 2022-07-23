@@ -1,6 +1,6 @@
 {
   "name": "@mattellis91/mockdb",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Simple database system for handling mock data.",
   "main": "lib/index.js",
   "scripts": {
@@ -18,7 +18,15 @@
     "url": "https://github.com/mattellis91/mockdb/issues"
   },
   "homepage": "https://github.com/mattellis91/mockdb#readme",
-  "keywords": ["json","db","database","mock","dummy","simple","data"],
+  "keywords": [
+    "json",
+    "db",
+    "database",
+    "mock",
+    "dummy",
+    "simple",
+    "data"
+  ],
   "devDependencies": {
     "@types/chai": "^4.2.18",
     "@types/lodash": "^4.14.170",
