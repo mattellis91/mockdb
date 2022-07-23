@@ -129,7 +129,7 @@ describe('Update tests', () => {
 
     });
 
-    it('should update a document using the $increment operation', () => {
+    it('should update a document using the $inc operation', () => {
         const insertRes = collection.insertOne({num1:1});
         const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$inc: {num1: 2, num2:2}});
         expect(updateRes.data.length).to.equal(1);
@@ -154,7 +154,7 @@ describe('Update tests', () => {
         expect(updateRes.data[0].highScore).to.equal(800);
     });
 
-    it('should update a document using the $min operation', () => {
+    it('should update a document using the $max operation', () => {
         const insertRes = collection.insertOne({highScore:800, lowScore: 200});
         const updateRes = collection.updateOne({_id: insertRes.data[0]._id},{$max: {lowScore:150, highScore:950}});
         expect(updateRes.data.length).to.equal(1);
@@ -213,7 +213,7 @@ describe('Update tests', () => {
         expect((updateRes.data[0].shapes as string[])[1] as string).to.equal('circle');
     })
 
-    it('should update a document using the $pop operation', () => {
+    it('should update a document using the $push operation', () => {
         const insertRes = collection.insertOne({colors:['red','blue','green'], shapes:['square','triange','circle']});
         const updateRes = collection.update({_id:insertRes.data[0]._id}, {$push:{colors: 'yellow', shapes:'rectangle' }});
         expect(updateRes.data.length).to.equal(1);

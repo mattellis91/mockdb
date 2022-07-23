@@ -6,16 +6,7 @@ Create and manage local mock document orientated databases using mongodb like fi
 npm i @mattellis91/mockdb
 ```
 
-## Table of Contents
-  - [Database](#Database)
-  - [Collections](#Collections)
-  - [Filter](#Filter)
-  - [Update](#Update)
-  - [Contact](#Contact)
-  - [License](#License)
-
-
-## Database [🔝](#mockdb)
+## Database
 
 Create a new database , connect to an existing database or remove an existing database with the MockDb static methods 
 
@@ -44,7 +35,7 @@ const connection = MockDb.connect('testDb');
 
 ```
 
-## Collections [🔝](#mockdb)
+## Collections
 
 Manage collections of documents. Collections are represented as json files inside the relevant database subdirectory.
 
@@ -99,7 +90,7 @@ collection.count();
 connection.dropCollection('testCollection');
 ```
 
-## Filter [🔝](#mockdb)
+## Filter
 Filter documents using mongodb like query operators
 ```javascript
 
@@ -134,7 +125,25 @@ collection.remove({bar: true});
 collection.removeOne({bar: false});
 ```
 
-## Update [🔝](#mockdb)
+#### Current supported filter operators
+
+| Operator      | Description   |
+| ------------- |-------------  |
+| [$eq](https://www.mongodb.com/docs/manual/reference/operator/query/eq/#mongodb-query-op.-eq)  | Matches values that are equal to a specified value.|
+| [$ne](https://www.mongodb.com/docs/manual/reference/operator/query/ne/#mongodb-query-op.-ne)      | Matches all values that are not equal to a specified value.      |
+| [$gt](https://www.mongodb.com/docs/manual/reference/operator/query/gt/#mongodb-query-op.-gt) | Matches values that are greater than a specified value.      |
+| [$gte](https://www.mongodb.com/docs/manual/reference/operator/query/gte/#mongodb-query-op.-gte) | Matches values that are greater than or equal to a specified value.      |
+| [$lt](https://www.mongodb.com/docs/manual/reference/operator/query/lt/#mongodb-query-op.-lt) |Matches values that are less than a specified value.    |
+| [$lte](https://www.mongodb.com/docs/manual/reference/operator/query/lte/#mongodb-query-op.-lte) | Matches values that are less than or equal to a specified value.      |
+| [$lte](https://www.mongodb.com/docs/manual/reference/operator/query/lte/#mongodb-query-op.-lte) | Matches values that are less than or equal to a specified value.      |
+| [$in](https://www.mongodb.com/docs/manual/reference/operator/query/in/#mongodb-query-op.-in) | Matches any of the values specified in an array.   |
+| [$nin](https://www.mongodb.com/docs/manual/reference/operator/query/nin/#mongodb-query-op.-nin) | Matches none of the values specified in an array.   |
+| [$exists](https://www.mongodb.com/docs/manual/reference/operator/query/exists/#mongodb-query-op.-exists) | Matches documents that have the specified field. |
+| [$text](https://www.mongodb.com/docs/manual/reference/operator/query/text/#mongodb-query-op.-text) | Performs text search. |
+| [$and](https://www.mongodb.com/docs/manual/reference/operator/query/and/#mongodb-query-op.-and) |Joins query clauses with a logical AND returns all documents that match the conditions of both clauses. |
+| [$or](https://www.mongodb.com/docs/manual/reference/operator/query/or/#mongodb-query-op.-or) | Joins query clauses with a logical OR returns all documents that match the conditions of either clause. |
+
+## Update
 Update documents using mongodb like update operators
 
 ```javascript
@@ -152,8 +161,40 @@ collection.updateOne({foo: {$gt: 1000} }, {$set : {bar : true }, upsert: true })
 
 ```
 
+#### Current supported update operators
+
+| Operator      | Description   |
+| ------------- |-------------  |
+|[$set](https://www.mongodb.com/docs/manual/reference/operator/update/set/#mongodb-update-up.-set)  | Sets the value of a field in a document.|
+| [$inc](https://www.mongodb.com/docs/manual/reference/operator/update/inc/#mongodb-update-up.-inc)      | Increments the value of the field by the specified amount.      |
+| [$mul](https://www.mongodb.com/docs/manual/reference/operator/update/mul/#mongodb-update-up.-mul) | Multiplies the value of the field by the specified amount.      |
+| [$min](https://www.mongodb.com/docs/manual/reference/operator/update/min/#mongodb-update-up.-min) | 	Only updates the field if the specified value is less than the existing field value.      |
+| [$max](https://www.mongodb.com/docs/manual/reference/operator/update/max/#mongodb-update-up.-max) |	Only updates the field if the specified value is greater than the existing field value.  |
+| [$unset](https://www.mongodb.com/docs/manual/reference/operator/update/unset/#mongodb-update-up.-unset) |     Removes the specified field from a document. |
+| [$rename](https://www.mongodb.com/docs/manual/reference/operator/update/rename/#mongodb-update-up.-rename) |     Renames a field. |
+| [$setOnInsert](https://www.mongodb.com/docs/manual/reference/operator/update/setOnInsert/#mongodb-update-up.-setOnInsert) |  Sets the value of a field if an update results in an insert of a document. Has no effect on update operations that modify existing documents. |
+| [$addToset](https://www.mongodb.com/docs/manual/reference/operator/update/addToSet/#mongodb-update-up.-addToSet) |  Adds elements to an array only if they do not already exist in the set. |
+| [$pop](https://www.mongodb.com/docs/manual/reference/operator/update/pop/#mongodb-update-up.-pop) |  Removes the first or last item of an array. |
+| [$push](https://www.mongodb.com/docs/manual/reference/operator/update/push/#mongodb-update-up.-push) |  Adds an item to an array. |
+| [$pullAll](https://www.mongodb.com/docs/manual/reference/operator/update/pullAll/#mongodb-update-up.-pullAll) | Removes all matching values from an array. |
+
+
+## Roadmap
+
+- Add exporting / importing data from databases 
+- Add additional filter operators
+- Add add update operators
+- Add random data generation
+
+## Tests
+
+```javascript
+npm run test
+```
+
+
 ## Contact
-Created by [Matt Ellis](https://github.com/mattellis91) - feel free to contact me!
+Created by [Matt Ellis](https://github.com/mattellis91). Feel free to contact me
 
 <div style="display: flex; margin-left:1rem;">
 <a href="https://au.linkedin.com/in/matt-ellis-8063b011a"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="linkedin" style="display:inline;"/></a>
