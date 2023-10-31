@@ -192,8 +192,5 @@ collection.updateOne({foo: {$gt: 1000} }, {$set : {bar : true }, upsert: true })
 npm run test
 ```
 
-## Contact
-Created by [Matt Ellis](https://github.com/mattellis91). Feel free to contact me
-
 ## License 
 This project is open source and available under the [MIT License](https://opensource.org/licenses/MIT). 
